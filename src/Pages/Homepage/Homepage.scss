@@ -1,0 +1,39 @@
+.homepage {
+	margin-top: 25vh;
+	@include flex(center, center);
+	flex-direction: column;
+	align-self: center;
+	h3 {
+		text-align: center;
+		font-size: 26px;
+		margin-bottom: 30px;
+	}
+	p {
+		margin-top: 10px;
+		text-align: center;
+		width: 80%;
+		font-size: 14px;
+	}
+	.actions {
+		@include flex(center, center);
+
+		button {
+			margin-top: 20px;
+			margin-left: 20px;
+		}
+	}
+}
+
+@media screen and (max-width: 720px) {
+	.homepage {
+		p {
+			width: 95%;
+		}
+		.actions {
+			flex-direction: column;
+			button {
+				width: 200px;
+			}
+		}
+	}
+}
