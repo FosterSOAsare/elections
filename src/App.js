@@ -9,12 +9,12 @@ import Dashboard from "./Pages/Dashboard/Dashboard";
 
 function LogInRequired({ children }) {
 	const { credentials } = useAppContext();
-	return credentials?.user ? children : <Navigate to="/"></Navigate>;
+	return credentials?.userId ? children : <Navigate to="/login"></Navigate>;
 }
 
 function CheckLogged({ children }) {
 	const { credentials } = useAppContext();
-	return !credentials?.user ? children : <Navigate to="/dashboard"></Navigate>;
+	return !credentials?.userId ? children : <Navigate to="/dashboard"></Navigate>;
 }
 
 function App() {
@@ -22,7 +22,13 @@ function App() {
 		<div className="App">
 			<Routes>
 				<Route path="/">
-					<Route index element={<Homepage />}></Route>
+					<Route
+						index
+						element={
+							<CheckLogged>
+								<Homepage />
+							</CheckLogged>
+						}></Route>
 					<Route
 						path="login"
 						element={
@@ -30,7 +36,13 @@ function App() {
 								<Login />
 							</CheckLogged>
 						}></Route>
-					<Route path="verifications" element={<Verifications />}></Route>
+					<Route
+						path="verifications"
+						element={
+							<CheckLogged>
+								<Verifications />
+							</CheckLogged>
+						}></Route>
 					<Route
 						path="register"
 						element={

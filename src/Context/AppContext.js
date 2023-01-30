@@ -30,6 +30,9 @@ const AppProvider = ({ children }) => {
 				if (res.error) return;
 				if (res.empty) {
 					// Logout user
+					if (navigator.onLine) {
+						credentialsDispatchFunc({ type: "logOut" });
+					}
 					return;
 				}
 				credentialsDispatchFunc({ type: "setUser", payload: res });
@@ -37,10 +40,14 @@ const AppProvider = ({ children }) => {
 	}, [firebase, credentials?.userId]);
 
 	useEffect(() => {
-		localStorage.setItem("election:userId", credentials?.userId);
+		if (credentials?.userId) {
+			localStorage.setItem("election:userId", credentials?.userId);
+		} else {
+			localStorage.removeItem("election:userId");
+		}
 	}, [credentials?.userId]);
 
-	return <AppContext.Provider value={{ firebase, credentials }}>{children}</AppContext.Provider>;
+	return <AppContext.Provider value={{ firebase, credentials, credentialsDispatchFunc }}>{children}</AppContext.Provider>;
 };
 
 export function useAppContext() {

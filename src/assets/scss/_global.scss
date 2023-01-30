@@ -5,6 +5,7 @@ $whiteBg2: #f3f4f6;
 $whiteText1: #374151;
 $whiteText2: #2595f2;
 $error: red;
+$success: green;
 @mixin flex($justify, $align) {
 	display: flex;
 	align-items: $align;

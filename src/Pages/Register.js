@@ -7,11 +7,12 @@ import { Navigate } from "react-router-dom";
 import { useAppContext } from "../Context/AppContext";
 
 const Register = () => {
-	const { error, clearError, errorDispatchFunc, validations } = useAuthContext();
+	const { error, clearError, errorDispatchFunc, validations, waiting, setWaiting } = useAuthContext();
 	const [navigate, setNavigate] = useState(false);
 	const { firebase } = useAppContext();
 
 	function submitForm(e) {
+		setWaiting(true);
 		e.preventDefault();
 		let formData = new FormData(e.target);
 		let email = formData.get("email");
@@ -62,6 +63,7 @@ const Register = () => {
 					// Store Data
 					firebase.addNewUser(username, uid, (res) => {
 						if (res.error) return;
+						setWaiting(false);
 						setNavigate(true);
 					});
 				});
@@ -85,7 +87,12 @@ const Register = () => {
 						<PasswordField text="Confirm password" handleFocus={clearError} name="confirmPassword" />
 						{error.display === "block" && <Error text={error.text} />}
 
-						<button className="button__primary">Sign Up</button>
+						{!waiting && <button className="button__primary">Sign Up</button>}
+						{waiting && (
+							<button className="button__primary waiting" disabled>
+								Waiting...
+							</button>
+						)}
 						<p className="redirect">
 							Already have an account ?{" "}
 							<Link to="/login" className="secondary">
@@ -95,7 +102,7 @@ const Register = () => {
 					</form>
 				</div>
 			</main>
-			{navigate && <Navigate to="/verifications?type=signUp"></Navigate>}
+			{navigate && <Navigate to="/verifications?mode=emailSent"></Navigate>}
 		</>
 	);
 };

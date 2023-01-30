@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, applyActionCode } from "firebase/auth";
 import { collection, query, where, getFirestore, getDocs, setDoc, doc, onSnapshot } from "firebase/firestore";
 
 class Firebase {
@@ -41,7 +41,10 @@ class Firebase {
 
 	async sendUserVerificationEmail(user, callback) {
 		try {
-			await sendEmailVerification(user);
+			await sendEmailVerification(user, {
+				url: "http://localhost:3000/verifications",
+				handleCodeInApp: true,
+			});
 			callback({ success: true });
 		} catch (error) {
 			callback({ error: true });
@@ -85,6 +88,19 @@ class Firebase {
 			});
 		} catch (error) {
 			callback({ error: "true" });
+		}
+	}
+
+	async checkEmailVerificationCode(oobCode, callback) {
+		try {
+			let res = await applyActionCode(this.auth, oobCode);
+			callback(res);
+		} catch (error) {
+			if (error.code === "auth/invalid-action-code") {
+				callback({ error: true, payload: "Invalid code " });
+				return;
+			}
+			callback({ error: true });
 		}
 	}
 }

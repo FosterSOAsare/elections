@@ -1,0 +1,39 @@
+.verifications {
+	height: 100vh;
+	@include flex(center, center);
+	flex-direction: column;
+	h3 {
+		text-align: center;
+	}
+	p {
+		margin-top: 20px;
+		font-weight: bold;
+		max-width: 600px;
+		text-align: center;
+		line-height: 30px;
+	}
+	i {
+		display: block;
+		background-color: $whiteBg2;
+		width: 80px;
+		height: 80px;
+		margin: 0 auto;
+		margin-bottom: 20px;
+		@include flex(center, center);
+		border-radius: 50%;
+		font-size: 37px;
+		text-align: center;
+	}
+	i.fa-x {
+		background-color: $error;
+		color: $whiteBg1;
+	}
+	i.success {
+		background-color: $success;
+		color: $whiteBg1;
+	}
+	.link {
+		color: $whiteText2;
+		text-decoration: underline;
+	}
+}
