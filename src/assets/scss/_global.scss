@@ -14,7 +14,6 @@ $success: green;
 .container {
 	width: 100%;
 	height: auto;
-	min-height: 200px;
 	margin: 0 auto;
 	max-width: 1024px;
 }
@@ -24,10 +23,25 @@ $success: green;
 	box-sizing: border-box;
 	font-family: "Merriweather", sans-serif;
 }
+ul {
+	list-style-type: none;
+}
+
+li {
+	font-size: 14px;
+	font-family: "Lato", sans-serif;
+	color: $whiteText1;
+	&:hover {
+		color: $whiteText2;
+		cursor: pointer;
+		text-decoration: underline;
+	}
+}
 
 body {
 	width: 100%;
 	min-height: 100vh;
+	padding-bottom: 30vh;
 }
 h3 {
 	color: $whiteText1;
@@ -113,4 +127,10 @@ a.secondary {
 p {
 	font-size: 14px;
 	color: $whiteText1;
+}
+
+body:has(.header) {
+	main {
+		padding-top: 90px;
+	}
 }

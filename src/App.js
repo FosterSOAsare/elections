@@ -6,6 +6,7 @@ import Register from "./Pages/Register";
 import Verifications from "./Pages/Verifications/Verifications";
 import { useAppContext } from "./Context/AppContext";
 import Dashboard from "./Pages/Dashboard/Dashboard";
+import Header from "./Components/Header/Header";
 
 function LogInRequired({ children }) {
 	const { credentials } = useAppContext();
@@ -50,6 +51,8 @@ function App() {
 								<Register />
 							</CheckLogged>
 						}></Route>
+				</Route>
+				<Route path="/" element={<Header />}>
 					<Route
 						path="dashboard"
 						element={
