@@ -4,6 +4,7 @@ $whiteBg1: #ffffff;
 $whiteBg2: #f3f4f6;
 $whiteText1: #374151;
 $whiteText2: #2595f2;
+$error: red;
 @mixin flex($justify, $align) {
 	display: flex;
 	align-items: $align;
@@ -27,15 +28,49 @@ body {
 	width: 100%;
 	min-height: 100vh;
 }
+h3 {
+	color: $whiteText1;
+}
 
 .button__primary,
 .button__secondary {
 	width: auto;
 	height: 40px;
-	padding: 0 10px;
+	padding: 0 15px;
 	border-radius: 5px;
 	font-weight: bold;
 	font-family: "Lato", sans-serif;
+}
+
+label,
+input {
+	display: block;
+}
+label {
+	margin-bottom: 5px;
+	font-weight: bold;
+	font-family: "Lato", sans-serif;
+	font-size: 14px;
+	color: $whiteText1;
+}
+input {
+	height: 35px;
+	width: 400px;
+	border-radius: 5px;
+	border: 1px solid $whiteText1;
+	padding: 0 10px;
+	margin-bottom: 20px;
+	font-size: 13px;
+	font-weight: bold;
+	font-family: "Lato", sans-serif;
+	color: $whiteText1;
+	&:focus {
+		outline: none;
+	}
+}
+i {
+	font-size: 14px;
+	color: $whiteText1;
 }
 
 .button__primary {
@@ -56,7 +91,25 @@ body {
 		text-transform: capitalize;
 	}
 }
+a {
+	text-decoration: none;
+	font-size: 14px;
+	font-family: "Lato", sans-serif;
+	&:hover {
+		text-decoration: underline;
+	}
+}
+a.primary {
+	color: $whiteBg1;
+}
+a.secondary {
+	color: $whiteText1;
+	&:hover {
+		color: $whiteText2;
+	}
+}
 
 p {
-	font-size: 15px;
+	font-size: 14px;
+	color: $whiteText1;
 }

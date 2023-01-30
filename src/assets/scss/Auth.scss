@@ -1,0 +1,21 @@
+.auth {
+	@include flex(center, center);
+	flex-direction: column;
+	height: 100vh;
+
+	h3 {
+		margin-bottom: 20px;
+		text-align: center;
+	}
+	button {
+		width: 100%;
+	}
+	.redirect {
+		font-weight: bold;
+		margin-top: 10px;
+		font-size: 13px;
+		a {
+			margin-left: 5px;
+		}
+	}
+}

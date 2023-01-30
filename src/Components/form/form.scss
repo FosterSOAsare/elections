@@ -1,0 +1,25 @@
+.passwordField {
+	width: auto;
+	.field {
+		@include flex(space-between, center);
+		border: 1px solid $whiteText1;
+		border-radius: 5px;
+		padding-right: 5px;
+		width: 400px;
+		input {
+			margin: 0;
+			border: none;
+			min-width: 90%;
+		}
+	}
+	margin-bottom: 20px;
+}
+
+.error {
+	color: $error;
+	margin-top: -15px;
+	margin-bottom: 15px;
+	font-size: 13px;
+	font-weight: bold;
+	font-family: "Poppins", sans-serif;
+}
