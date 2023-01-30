@@ -7,6 +7,8 @@ import Verifications from "./Pages/Verifications/Verifications";
 import { useAppContext } from "./Context/AppContext";
 import Dashboard from "./Pages/Dashboard/Dashboard";
 import Header from "./Components/Header/Header";
+import Election from "./Components/Election";
+import CreateElection from "./Pages/CreateElection/CreateElection";
 
 function LogInRequired({ children }) {
 	const { credentials } = useAppContext();
@@ -60,6 +62,14 @@ function App() {
 								<Dashboard />
 							</LogInRequired>
 						}></Route>
+					<Route
+						path="new"
+						element={
+							<LogInRequired>
+								<CreateElection />
+							</LogInRequired>
+						}></Route>
+					<Route path="election/:electionId" element={<CreateElection />}></Route>
 				</Route>
 			</Routes>
 		</div>

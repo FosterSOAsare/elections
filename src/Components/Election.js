@@ -1,13 +1,14 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { truncateText } from "../Utils/Text";
 
-const Election = () => {
+const Election = ({ desc, name, election_id }) => {
 	return (
 		<div className="election">
-			<p>Elections-app</p>
-			<p className="desc">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Exercitationem, a!</p>
+			<p>{name}</p>
+			<p className="desc">{truncateText(desc, 125)}</p>
 			<div className="control">
-				<NavLink to={`/elections`}>
+				<NavLink to={`/election/${election_id}`}>
 					<i className="fa-solid fa-code"></i>
 				</NavLink>
 			</div>

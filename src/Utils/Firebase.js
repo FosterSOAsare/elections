@@ -103,6 +103,25 @@ class Firebase {
 			callback({ error: true });
 		}
 	}
+
+	async fetchUserElections(userId, callback) {
+		try {
+			let q = query(collection(this.db, "elections"), where("author", "==", userId));
+			onSnapshot(q, (res) => {
+				if (res.empty) {
+					callback({ empty: true });
+					return;
+				}
+				res = res.docs.map((e) => {
+					let data = e.data();
+					return { desc: data.desc, name: data.name, election_id: e.id };
+				});
+				callback(res);
+			});
+		} catch (error) {
+			callback({ error: true });
+		}
+	}
 }
 
 export default Firebase;

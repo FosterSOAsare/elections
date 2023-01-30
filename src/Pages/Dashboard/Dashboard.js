@@ -1,9 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import Election from "../../Components/Election";
+import { useAppContext } from "../../Context/AppContext";
 
 const Dashboard = () => {
-	const [userElections, setUserElections] = useState([1, 3, 4, 5]);
+	const [userElections, setUserElections] = useState([]);
+	const { firebase, credentials } = useAppContext();
+
+	useEffect(() => {
+		firebase.fetchUserElections(credentials?.userId, (res) => {
+			if (res.error) return;
+			setUserElections(res);
+		});
+	}, [firebase, credentials?.userId]);
 	return (
 		<main className="container dashboard">
 			<div className="elections">
@@ -21,7 +30,7 @@ const Dashboard = () => {
 						</div>
 						{userElections.length > 0 &&
 							userElections.map((e, index) => {
-								return <Election key={index} />;
+								return <Election key={index} {...e} />;
 							})}
 					</div>
 				</div>
