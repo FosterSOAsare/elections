@@ -3,6 +3,7 @@ import Candidate from "./Candidate/Candidate";
 import { useElectionContext } from "../../../Context/ElectionContext";
 
 const Category = ({ name, categoryIndex, candidates = [] }) => {
+	const { deleteCategory } = useElectionContext();
 	const { setShowCandidateForm } = useElectionContext();
 	const [showContent, setShowContent] = useState(true);
 	return (
@@ -11,7 +12,7 @@ const Category = ({ name, categoryIndex, candidates = [] }) => {
 				<h4>{name}</h4>
 				<div className="actions">
 					<i className="fa-solid fa-pencil small"></i>
-					<i className="fa-solid fa-trash small delete"></i>
+					<i className="fa-solid fa-trash small delete" onClick={() => deleteCategory(categoryIndex)}></i>
 					<i className={`fa-solid fa-caret-${!showContent ? "down" : "up"}`} onClick={() => setShowContent((prev) => !prev)}></i>
 				</div>
 			</div>
@@ -25,7 +26,7 @@ const Category = ({ name, categoryIndex, candidates = [] }) => {
 							<p>Add new candidate</p>
 						</div>
 						{candidates.map((e, index) => {
-							return <Candidate key={index} {...e} candidateIndex={index} />;
+							return <Candidate key={index} {...e} candidateIndex={index} categoryIndex={categoryIndex} />;
 						})}
 					</div>
 				</div>

@@ -43,6 +43,22 @@ const ElectionProvider = ({ children }) => {
 		setShowCandidateForm({ display: false, categoryIndex: null });
 	}
 
+	function deleteCandidate(categoryIndex, candidateIndex) {
+		let categoriesData = electionData.data.categories.map((e, index) => {
+			if (index === categoryIndex) {
+				return { ...e, candidates: e.candidates.filter((candidate, index) => index !== candidateIndex) };
+			}
+			return e;
+		});
+		electionDataDispatchFunc({ type: "storeCategory", payload: categoriesData });
+	}
+
+	function deleteCategory(categoryIndex) {
+		let categoriesData = electionData.data.categories.filter((e, index) => {
+			return index !== categoryIndex;
+		});
+		electionDataDispatchFunc({ type: "storeCategory", payload: categoriesData });
+	}
 	return (
 		<ElectionContext.Provider
 			value={{
@@ -58,6 +74,8 @@ const ElectionProvider = ({ children }) => {
 				showCategoryForm,
 				setShowCandidateForm,
 				storeCandidate,
+				deleteCandidate,
+				deleteCategory,
 			}}>
 			{children}
 		</ElectionContext.Provider>
