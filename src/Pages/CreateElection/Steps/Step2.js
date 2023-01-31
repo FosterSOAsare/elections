@@ -1,27 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import CategoryPopup from "../CategoryPopup/CategoryPopup";
 import Category from "../Category/Category";
 import CandidatePopup from "../CandidatePopup/CandidatePopup";
+import { useElectionContext } from "../../../Context/ElectionContext";
 
 const Step2 = () => {
-	const [categoriesData, setCategoriesData] = useState([]);
-	const [showCategoryForm, setShowCategoryForm] = useState(false);
-	const [candidateForm, setCandidateForm] = useState({ display: false, category_id: null });
+	const { electionData, showCategoryForm, showCandidateForm, setShowCategoryForm } = useElectionContext();
 
-	function storeCategoriesData(data) {
-		data.candidates = [];
-		data = [...categoriesData, data];
-		setCategoriesData(data);
-		setShowCategoryForm(false);
-	}
-
-	function storeCandidate(data) {
-		let newCategoriesData = categoriesData.map((e, index) => {
-			return index === candidateForm.category_id ? { ...e, candidates: [...e.candidates, data] } : e;
-		});
-		setCategoriesData(newCategoriesData);
-		setCandidateForm({ display: false, category_id: null });
-	}
 	return (
 		<>
 			<section className="step2">
@@ -32,13 +17,20 @@ const Step2 = () => {
 						<i className="fa-solid fa-plus"></i>
 						<p>Add a new category</p>
 					</div>
-					{categoriesData.map((e, index) => {
-						return <Category key={index} {...e} index={index} setCandidateForm={setCandidateForm} />;
+					{electionData?.data?.categories?.map((e, index) => {
+						return <Category key={index} {...e} categoryIndex={index} />;
 					})}
 				</div>
 
-				{showCategoryForm && <CategoryPopup storeCategoriesData={storeCategoriesData} />}
-				{candidateForm.display && <CandidatePopup storeCandidate={storeCandidate} setCandidateForm={setCandidateForm} />}
+				{electionData?.data?.categories?.length > 0 && (
+					<div className="actions">
+						<button className="button__secondary">Prev</button>
+						<button className="button__primary">Next</button>
+					</div>
+				)}
+
+				{showCategoryForm && <CategoryPopup />}
+				{showCandidateForm.display && <CandidatePopup />}
 			</section>
 		</>
 	);

@@ -151,3 +151,11 @@ textarea {
 button.disabled {
 	opacity: 0.6;
 }
+
+.actions {
+	@include flex(center, center);
+	gap: 20px;
+	button {
+		margin: 0;
+	}
+}

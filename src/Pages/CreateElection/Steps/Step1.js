@@ -1,6 +1,12 @@
 import React, { useRef } from "react";
+import { useElectionContext } from "../../../Context/ElectionContext";
 
-const Step1 = ({ nextStep, cancelElection }) => {
+const Step1 = () => {
+	const { nextStep, setAgreeToRules } = useElectionContext();
+	function cancelElection(e) {
+		e.preventDefault();
+		setAgreeToRules({ state: false, next: false });
+	}
 	const formRef = useRef(null);
 	return (
 		<section className="step1">

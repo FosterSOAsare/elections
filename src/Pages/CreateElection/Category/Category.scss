@@ -11,6 +11,12 @@
 		i {
 			font-size: 20px;
 		}
+		i.small {
+			font-size: 16px;
+		}
+		i.delete {
+			color: $error;
+		}
 		h4 {
 			color: $whiteText1;
 			font-weight: bold;
@@ -43,11 +49,28 @@
 					height: 150px;
 					border-radius: 5px;
 				}
-				p {
+				.details {
+					width: 100%;
+					@include flex(space-between, center);
 					margin-top: 10px;
-					margin-left: 10px;
-					font-weight: bold;
-					height: auto;
+					padding: 0 10px;
+
+					p {
+						width: 90%;
+						font-weight: bold;
+						height: auto;
+					}
+					.actions {
+						gap: 10px;
+						width: 10%;
+						i {
+							margin: 0;
+							display: block;
+						}
+						i.delete {
+							color: $error;
+						}
+					}
 				}
 			}
 		}

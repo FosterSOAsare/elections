@@ -1,7 +1,13 @@
 import React, { useRef, useState } from "react";
+import { useElectionContext } from "../../../Context/ElectionContext";
 
-const CandidatePopup = ({ storeCandidate, setCandidateForm }) => {
-	const [candidateImgUrl, setCandidateImageUrl] = useState(null);
+const CandidatePopup = () => {
+	const { setShowCandidateForm, storeCandidate } = useElectionContext();
+	const [candidateData, setCandidateData] = useState({
+		name: "",
+		imageFile: "",
+		imageURL: "",
+	});
 
 	let inputRef = useRef(null);
 	let formRef = useRef(null);
@@ -11,37 +17,32 @@ const CandidatePopup = ({ storeCandidate, setCandidateForm }) => {
 		const reader = new FileReader();
 		reader.readAsDataURL(image);
 		reader.addEventListener("load", () => {
-			setCandidateImageUrl(reader.result);
+			setCandidateData((prev) => {
+				return { ...prev, imageURL: reader.result, imageFile: image };
+			});
 		});
 	}
 
-	function saveCandidateData(e) {
-		let formData = new FormData(formRef.current);
-		let name = formData.get("name");
-		let imageURL = candidateImgUrl;
-		let imageFile = inputRef.current.files[0];
-		storeCandidate({ name, imageURL, imageFile });
+	function setCandidateName(e) {
+		setCandidateData((prev) => {
+			return { ...prev, name: e.target.value };
+		});
 	}
-
 	return (
 		<aside className="categoryPopup candidatePopup container">
 			<form action="" onSubmit={(e) => e.preventDefault()} ref={formRef}>
 				<label htmlFor="name"> Enter candidate's name:</label>
-				<input type="text" name="name" id="name" />
+				<input type="text" name="name" id="name" value={candidateData.name} onChange={setCandidateName} />
 
 				<label htmlFor="image" className="candidate_img">
-					{!candidateImgUrl ? <p>Add Image </p> : <img alt="Candidate" src={candidateImgUrl} />}
+					{candidateData.imageURL === "" ? <p>Add Image </p> : <img alt="Candidate" src={candidateData?.imageURL} />}
 				</label>
 				<input type="file" accept="image/*" name="image" id="image" onChange={getImageURL} ref={inputRef} />
 				<div className="actions">
-					<button className="button__primary" onClick={saveCandidateData}>
+					<button className="button__primary" onClick={() => storeCandidate(candidateData)}>
 						Continue
 					</button>
-					<button
-						className="button__secondary"
-						onClick={() => {
-							setCandidateForm({ display: false, category_id: null });
-						}}>
+					<button className="button__secondary" onClick={() => setShowCandidateForm(false)}>
 						Cancel
 					</button>
 				</div>

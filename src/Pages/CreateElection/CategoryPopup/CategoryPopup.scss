@@ -11,12 +11,5 @@
 	form {
 		width: 600px;
 		height: auto;
-		.actions {
-			gap: 20px;
-			@include flex(center, center);
-			button {
-				margin: 0;
-			}
-		}
 	}
 }
