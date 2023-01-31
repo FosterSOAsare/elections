@@ -1,0 +1,22 @@
+.categoryPopup {
+	background-color: $whiteBg1;
+	position: fixed;
+	top: 70px;
+	left: 0;
+	height: calc(98vh - 70px);
+	width: 100%;
+	right: 0;
+	z-index: 5;
+	@include flex(center, center);
+	form {
+		width: 600px;
+		height: auto;
+		.actions {
+			gap: 20px;
+			@include flex(center, center);
+			button {
+				margin: 0;
+			}
+		}
+	}
+}

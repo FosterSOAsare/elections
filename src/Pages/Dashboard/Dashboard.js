@@ -19,15 +19,10 @@ const Dashboard = () => {
 				<div className="content">
 					<h3>Your Elections </h3>
 					<div className="elections">
-						<div className="election add">
+						<NavLink className="election add" to="/new">
 							<i className="fa-solid fa-plus"></i>
 							<p>Add Election</p>
-							<div className="control">
-								<NavLink to={`/new`}>
-									<i className="fa-solid fa-code"></i>
-								</NavLink>
-							</div>
-						</div>
+						</NavLink>
 						{userElections.length > 0 &&
 							userElections.map((e, index) => {
 								return <Election key={index} {...e} />;

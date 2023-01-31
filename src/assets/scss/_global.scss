@@ -70,7 +70,7 @@ label {
 }
 input {
 	height: 35px;
-	width: 400px;
+	width: 600px;
 	border-radius: 5px;
 	border: 1px solid $whiteText1;
 	padding: 0 10px;
@@ -133,4 +133,21 @@ body:has(.header) {
 	main {
 		padding-top: 90px;
 	}
+}
+
+textarea {
+	width: 600px;
+	resize: none;
+	font-size: 12px;
+	color: $whiteText1;
+	padding: 10px;
+	min-height: 250px;
+	border-radius: 5px;
+	&:focus {
+		outline: none;
+	}
+}
+
+button.disabled {
+	opacity: 0.6;
 }

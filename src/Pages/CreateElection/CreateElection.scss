@@ -1,0 +1,29 @@
+.createElection {
+	min-height: 90vh;
+	@include flex(center, center);
+	.createElection__container {
+		width: 100%;
+		min-height: 60vh;
+		padding-left: 20px;
+
+		h3.rules {
+			margin-top: 30px;
+		}
+
+		.agree_to_rules {
+			width: auto;
+			@include flex(flex-start, center);
+			gap: 20px;
+			label,
+			input {
+				display: block;
+				margin: 0;
+				width: auto;
+			}
+		}
+		button {
+			width: 200px;
+			margin-top: 20px;
+		}
+	}
+}
