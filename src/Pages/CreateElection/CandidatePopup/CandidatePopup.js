@@ -2,12 +2,16 @@ import React, { useRef, useState } from "react";
 import { useElectionContext } from "../../../Context/ElectionContext";
 
 const CandidatePopup = () => {
-	const { setShowCandidateForm, storeCandidate } = useElectionContext();
-	const [candidateData, setCandidateData] = useState({
-		name: "",
-		imageFile: "",
-		imageURL: "",
-	});
+	const { setShowCandidateForm, storeCandidate, updateCandidate } = useElectionContext();
+	const { editDataIndex, electionData } = useElectionContext();
+
+	const [candidateData, setCandidateData] = useState(
+		electionData?.data?.categories[editDataIndex?.categoryIndex]?.candidates[editDataIndex?.candidateIndex] || {
+			name: "",
+			imageFile: "",
+			imageURL: "",
+		}
+	);
 
 	let inputRef = useRef(null);
 	let formRef = useRef(null);
@@ -28,6 +32,13 @@ const CandidatePopup = () => {
 			return { ...prev, name: e.target.value };
 		});
 	}
+	function prepareCandidateStorage() {
+		if (editDataIndex.candidateIndex !== null) {
+			updateCandidate(candidateData, editDataIndex.categoryIndex, editDataIndex.candidateIndex);
+		} else {
+			storeCandidate(candidateData);
+		}
+	}
 	return (
 		<aside className="categoryPopup candidatePopup container">
 			<form action="" onSubmit={(e) => e.preventDefault()} ref={formRef}>
@@ -39,7 +50,7 @@ const CandidatePopup = () => {
 				</label>
 				<input type="file" accept="image/*" name="image" id="image" onChange={getImageURL} ref={inputRef} />
 				<div className="actions">
-					<button className="button__primary" onClick={() => storeCandidate(candidateData)}>
+					<button className="button__primary" onClick={prepareCandidateStorage}>
 						Continue
 					</button>
 					<button className="button__secondary" onClick={() => setShowCandidateForm(false)}>

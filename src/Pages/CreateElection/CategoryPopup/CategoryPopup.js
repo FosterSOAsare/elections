@@ -1,11 +1,12 @@
 import React, { useRef, useState } from "react";
 import { useElectionContext } from "../../../Context/ElectionContext";
 
-const CategoryPopup = ({ categoryPrevData }) => {
-	const { setShowCategoryForm, storeCategory } = useElectionContext();
+const CategoryPopup = () => {
+	const { electionData, setShowCategoryForm, storeCategory, editDataIndex, updateCategory } = useElectionContext();
+
 	const formRef = useRef(null);
 	const [categoryData, setCategoryData] = useState(
-		categoryPrevData || {
+		electionData.data?.categories[editDataIndex.categoryIndex] || {
 			name: "",
 			limit: "",
 			candidates: [],
@@ -22,7 +23,11 @@ const CategoryPopup = ({ categoryPrevData }) => {
 
 	function handleSubmit(e) {
 		e.preventDefault();
-		storeCategory(categoryData);
+		if (electionData.data?.categories[editDataIndex.categoryIndex]) {
+			updateCategory(categoryData, editDataIndex.categoryIndex);
+		} else {
+			storeCategory(categoryData);
+		}
 	}
 	return (
 		<aside className="categoryPopup container">

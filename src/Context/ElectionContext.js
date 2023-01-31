@@ -5,6 +5,7 @@ const ElectionContext = createContext();
 const ElectionProvider = ({ children }) => {
 	const [electionData, electionDataDispatchFunc] = useReducer(electionDataFunc, { step: 2, data: { categories: [] } });
 	const [agreeToRules, setAgreeToRules] = useState({ state: true, next: true });
+	const [editDataIndex, setEditDataIndex] = useState({ candidateIndex: null, categoryIndex: null });
 	const [showCategoryForm, setShowCategoryForm] = useState(false);
 	const [showCandidateForm, setShowCandidateForm] = useState({ display: false, categoryIndex: null });
 
@@ -42,6 +43,29 @@ const ElectionProvider = ({ children }) => {
 		electionDataDispatchFunc({ type: "storeCategory", payload: categories });
 		setShowCandidateForm({ display: false, categoryIndex: null });
 	}
+	function updateCategory(data, categoryIndex) {
+		let categories = electionData.data.categories.map((e, index) => {
+			return index === categoryIndex ? { ...data } : e;
+		});
+		electionDataDispatchFunc({ type: "storeCategory", payload: categories });
+		setShowCategoryForm(false);
+		setEditDataIndex({ candidateIndex: null, categoryIndex: null });
+	}
+
+	function updateCandidate(data, categoryIndex, candidateIndex) {
+		let categoriesData = electionData.data.categories.map((category, index) => {
+			if (index === categoryIndex) {
+				let candidates = category.candidates.map((e, index) => {
+					return index === candidateIndex ? data : e;
+				});
+				return { ...category, candidates };
+			}
+			return category;
+		});
+		electionDataDispatchFunc({ type: "storeCategory", payload: categoriesData });
+		setShowCandidateForm({ display: false, categoryIndex: null });
+		setEditDataIndex({ candidateIndex: null, categoryIndex: null });
+	}
 
 	function deleteCandidate(categoryIndex, candidateIndex) {
 		let categoriesData = electionData.data.categories.map((e, index) => {
@@ -76,6 +100,10 @@ const ElectionProvider = ({ children }) => {
 				storeCandidate,
 				deleteCandidate,
 				deleteCategory,
+				editDataIndex,
+				setEditDataIndex,
+				updateCategory,
+				updateCandidate,
 			}}>
 			{children}
 		</ElectionContext.Provider>

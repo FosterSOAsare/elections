@@ -3,15 +3,20 @@ import Candidate from "./Candidate/Candidate";
 import { useElectionContext } from "../../../Context/ElectionContext";
 
 const Category = ({ name, categoryIndex, candidates = [] }) => {
-	const { deleteCategory } = useElectionContext();
+	const { deleteCategory, setShowCategoryForm, setEditDataIndex } = useElectionContext();
 	const { setShowCandidateForm } = useElectionContext();
 	const [showContent, setShowContent] = useState(true);
+
+	function prepareEdit() {
+		setEditDataIndex({ categoryIndex: categoryIndex });
+		setShowCategoryForm(true);
+	}
 	return (
 		<div className="category" id={"category" + categoryIndex}>
 			<div className="category__header">
 				<h4>{name}</h4>
 				<div className="actions">
-					<i className="fa-solid fa-pencil small"></i>
+					<i className="fa-solid fa-pencil small" onClick={prepareEdit}></i>
 					<i className="fa-solid fa-trash small delete" onClick={() => deleteCategory(categoryIndex)}></i>
 					<i className={`fa-solid fa-caret-${!showContent ? "down" : "up"}`} onClick={() => setShowContent((prev) => !prev)}></i>
 				</div>
