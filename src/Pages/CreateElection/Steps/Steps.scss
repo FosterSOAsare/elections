@@ -39,7 +39,8 @@
 	}
 }
 
-.step2 {
+.step2,
+.step3 {
 	.categories {
 		width: 100%;
 		height: auto;
@@ -49,6 +50,22 @@
 	.actions {
 		button {
 			margin: 0;
+		}
+	}
+}
+
+.step3 {
+	padding: 0;
+	margin: 0;
+	h3 {
+		margin-bottom: 20px;
+		text-transform: uppercase;
+		font-family: "Lato", sans-serif;
+		color: $whiteText2;
+	}
+	p {
+		span {
+			opacity: 0.8;
 		}
 	}
 }

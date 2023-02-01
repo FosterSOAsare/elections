@@ -1,20 +1,30 @@
-import React, { createContext, useContext, useState, useReducer } from "react";
+import React, { createContext, useContext, useState, useReducer, useEffect } from "react";
 
 const ElectionContext = createContext();
 
 const ElectionProvider = ({ children }) => {
-	const [electionData, electionDataDispatchFunc] = useReducer(electionDataFunc, { step: 2, data: { categories: [] } });
+	let startUp = { step: 2, data: { categories: [] } };
+	const [electionData, electionDataDispatchFunc] = useReducer(electionDataFunc, { ...(JSON.parse(localStorage.getItem("electionData")) || { ...startUp }) });
 	const [agreeToRules, setAgreeToRules] = useState({ state: true, next: true });
 	const [editDataIndex, setEditDataIndex] = useState({ candidateIndex: null, categoryIndex: null });
 	const [showCategoryForm, setShowCategoryForm] = useState(false);
 	const [showCandidateForm, setShowCandidateForm] = useState({ display: false, categoryIndex: null });
 
+	useEffect(() => {
+		localStorage.setItem("electionData", JSON.stringify(electionData));
+	}, [electionData]);
 	function electionDataFunc(electionData, action) {
 		switch (action.type) {
 			case "setData":
 				return { step: electionData.step + 1, data: { ...electionData.data, ...action.payload } };
+			case "prevStep":
+				return { ...electionData, step: electionData.step - 1 };
+			case "nextStep":
+				return { ...electionData, step: electionData.step + 1 };
 			case "storeCategory":
 				return { ...electionData, data: { ...electionData.data, categories: action.payload } };
+			case "storeProperty":
+				return { ...electionData, data: { ...electionData.data, [action.name]: action.payload } };
 			case "storeCandidate":
 				return { ...electionData, data: { ...electionData.data, categories: action.payload } };
 			default:
@@ -27,8 +37,11 @@ const ElectionProvider = ({ children }) => {
 		let data = Object.fromEntries(formData.entries());
 		electionDataDispatchFunc({ type: "setData", payload: data });
 	}
-	function prevStep(e) {
-		console.log(e);
+	function prevStep() {
+		electionDataDispatchFunc({ type: "prevStep" });
+		setShowCandidateForm(false);
+		setShowCategoryForm(false);
+		setEditDataIndex({ categoryIndex: null, candidateIndex: null });
 	}
 
 	function storeCategory(data) {

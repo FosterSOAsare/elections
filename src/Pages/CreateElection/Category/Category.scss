@@ -1,7 +1,7 @@
 .category {
 	border-radius: 5px;
 	height: auto;
-	border: 2px solid $whiteText1;
+	border: 1px solid $whiteText1;
 	margin-bottom: 20px;
 	.category__header {
 		height: 40px;
@@ -20,6 +20,7 @@
 		h4 {
 			color: $whiteText1;
 			font-weight: bold;
+			font-family: "Lato", sans-serif;
 		}
 	}
 	.candidates {
@@ -28,6 +29,14 @@
 		padding: 10px;
 		h3 {
 			font-size: 14px;
+		}
+		p.note {
+			color: $whiteText2;
+			margin-bottom: 20px;
+			font-weight: bolder;
+			span {
+				opacity: 0.8;
+			}
 		}
 		.content {
 			margin-top: 10px;
@@ -40,14 +49,13 @@
 				width: 100%;
 				height: auto;
 				min-height: 200px;
-				border: 1px solid $whiteText2;
+				border: 1px solid $whiteText1;
 				border-radius: 5px;
+				overflow: hidden;
 				img {
-					width: 98%;
-					margin: 3px auto;
+					width: 100%;
 					display: block;
 					height: 150px;
-					border-radius: 5px;
 				}
 				.details {
 					width: 100%;
@@ -59,6 +67,10 @@
 						width: 90%;
 						font-weight: bold;
 						height: auto;
+						opacity: 0.8;
+						&:hover {
+							opacity: 1;
+						}
 					}
 					.actions {
 						gap: 10px;
@@ -66,6 +78,10 @@
 						i {
 							margin: 0;
 							display: block;
+							opacity: 0.8;
+							&:hover {
+								opacity: 1;
+							}
 						}
 						i.delete {
 							color: $error;
@@ -75,10 +91,20 @@
 			}
 		}
 	}
+	.markDone {
+		margin: 10px;
+		@include flex(flex-end, center);
+		button {
+			background-color: $whiteText2;
+			&:hover {
+				cursor: pointer;
+			}
+		}
+	}
 }
 .category:has(.candidates) {
 	.category__header {
-		border-bottom: 2px solid $whiteText1;
+		border-bottom: 1px solid $whiteText1;
 	}
 }
 

@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { useElectionContext } from "../../../Context/ElectionContext";
 
 const CategoryPopup = () => {
-	const { electionData, setShowCategoryForm, storeCategory, editDataIndex, updateCategory } = useElectionContext();
+	const { electionData, setShowCategoryForm, storeCategory, editDataIndex, updateCategory, setEditDataIndex } = useElectionContext();
 
 	const formRef = useRef(null);
 	const [categoryData, setCategoryData] = useState(
@@ -38,7 +38,12 @@ const CategoryPopup = () => {
 				<input type="text" name="limit" id="limit" value={categoryData?.limit} onChange={handleChange} />
 				<div className="actions">
 					<button className="button__primary">Continue</button>
-					<button className="button__secondary" onClick={() => setShowCategoryForm(false)}>
+					<button
+						className="button__secondary"
+						onClick={() => {
+							setEditDataIndex({ categoryIndex: null, candidateIndex: null });
+							setShowCategoryForm(false);
+						}}>
 						Cancel
 					</button>
 				</div>

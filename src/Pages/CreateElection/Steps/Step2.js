@@ -5,7 +5,7 @@ import CandidatePopup from "../CandidatePopup/CandidatePopup";
 import { useElectionContext } from "../../../Context/ElectionContext";
 
 const Step2 = () => {
-	const { electionData, showCategoryForm, showCandidateForm, setShowCategoryForm } = useElectionContext();
+	const { electionData, showCategoryForm, showCandidateForm, setShowCategoryForm, prevStep, electionDataDispatchFunc } = useElectionContext();
 
 	return (
 		<>
@@ -24,8 +24,16 @@ const Step2 = () => {
 
 				{electionData?.data?.categories?.length > 0 && (
 					<div className="actions">
-						<button className="button__secondary">Prev</button>
-						<button className="button__primary">Next</button>
+						<button className="button__secondary" onClick={prevStep}>
+							Prev
+						</button>
+						<button
+							className="button__primary"
+							onClick={() => {
+								electionDataDispatchFunc({ type: "nextStep" });
+							}}>
+							Preview Election
+						</button>
 					</div>
 				)}
 

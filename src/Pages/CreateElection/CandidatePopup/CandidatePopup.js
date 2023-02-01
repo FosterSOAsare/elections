@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { useElectionContext } from "../../../Context/ElectionContext";
 
 const CandidatePopup = () => {
-	const { setShowCandidateForm, storeCandidate, updateCandidate } = useElectionContext();
+	const { setShowCandidateForm, storeCandidate, updateCandidate, setEditDataIndex } = useElectionContext();
 	const { editDataIndex, electionData } = useElectionContext();
 
 	const [candidateData, setCandidateData] = useState(
@@ -53,7 +53,12 @@ const CandidatePopup = () => {
 					<button className="button__primary" onClick={prepareCandidateStorage}>
 						Continue
 					</button>
-					<button className="button__secondary" onClick={() => setShowCandidateForm(false)}>
+					<button
+						className="button__secondary"
+						onClick={() => {
+							setEditDataIndex({ categoryIndex: null, candidateIndex: null });
+							setShowCandidateForm(false);
+						}}>
 						Cancel
 					</button>
 				</div>
