@@ -4,8 +4,9 @@ import Step1 from "./Steps/Step1";
 import Step2 from "./Steps/Step2";
 import Step3 from "./Steps/Step3";
 import { useElectionContext } from "../../Context/ElectionContext";
+import { Navigate } from "react-router-dom";
 const CreateElection = () => {
-	const { electionData, agreeToRules, setAgreeToRules } = useElectionContext();
+	const { electionData, agreeToRules, setAgreeToRules, stored } = useElectionContext();
 
 	return (
 		<main className="container createElection">
@@ -18,6 +19,7 @@ const CreateElection = () => {
 						{electionData.step === 3 && <Step3 />}
 					</>
 				)}
+				{stored && <Navigate to="/" />}
 			</div>
 		</main>
 	);

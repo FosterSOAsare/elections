@@ -1,14 +1,17 @@
 import React, { useRef, useState } from "react";
 import { useElectionContext } from "../../../Context/ElectionContext";
+import { useAppContext } from "../../../Context/AppContext";
+import { sanitizeText } from "../../../Utils/Text";
 
 const CandidatePopup = () => {
 	const { setShowCandidateForm, storeCandidate, updateCandidate, setEditDataIndex } = useElectionContext();
 	const { editDataIndex, electionData } = useElectionContext();
+	const { firebase } = useAppContext();
+	const [waiting, setWaiting] = useState(false);
 
 	const [candidateData, setCandidateData] = useState(
 		electionData?.data?.categories[editDataIndex?.categoryIndex]?.candidates[editDataIndex?.candidateIndex] || {
 			name: "",
-			imageFile: "",
 			imageURL: "",
 		}
 	);
@@ -22,7 +25,19 @@ const CandidatePopup = () => {
 		reader.readAsDataURL(image);
 		reader.addEventListener("load", () => {
 			setCandidateData((prev) => {
-				return { ...prev, imageURL: reader.result, imageFile: image };
+				return { ...prev, imageURL: reader.result };
+			});
+		});
+	}
+
+	function storeImage(e) {
+		let image = e.target.files[0];
+		let name = sanitizeText(image.name);
+
+		firebase.uploadImage(name, image, (res) => {
+			setWaiting(false);
+			setCandidateData((prev) => {
+				return { ...prev, imageURL: res };
 			});
 		});
 	}
@@ -48,9 +63,20 @@ const CandidatePopup = () => {
 				<label htmlFor="image" className="candidate_img">
 					{candidateData.imageURL === "" ? <p>Add Image </p> : <img alt="Candidate" src={candidateData?.imageURL} />}
 				</label>
-				<input type="file" accept="image/*" name="image" id="image" onChange={getImageURL} ref={inputRef} />
+				<input
+					type="file"
+					accept="image/*"
+					name="image"
+					id="image"
+					onChange={(e) => {
+						setWaiting(true);
+						getImageURL(e);
+						storeImage(e);
+					}}
+					ref={inputRef}
+				/>
 				<div className="actions">
-					<button className="button__primary" onClick={prepareCandidateStorage}>
+					<button className={`button__primary${waiting ? " disabled" : ""}`} onClick={prepareCandidateStorage} disabled={waiting}>
 						Continue
 					</button>
 					<button

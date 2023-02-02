@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, applyActionCode } from "firebase/auth";
-import { collection, query, where, getFirestore, getDocs, setDoc, doc, onSnapshot } from "firebase/firestore";
+import { collection, query, where, getFirestore, getDocs, setDoc, addDoc, doc, onSnapshot } from "firebase/firestore";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 class Firebase {
 	constructor() {
@@ -15,6 +16,7 @@ class Firebase {
 		this.app = initializeApp(this.config);
 		this.auth = getAuth();
 		this.db = getFirestore(this.app);
+		this.storage = getStorage(this.app);
 	}
 
 	async checkUserExists(username, callback) {
@@ -120,6 +122,52 @@ class Firebase {
 			});
 		} catch (error) {
 			callback({ error: true });
+		}
+	}
+
+	async uploadImage(imageName, image, callback) {
+		try {
+			const storageRef = ref(this.storage, "elections/" + imageName);
+			const uploadTask = uploadBytesResumable(storageRef, image);
+			uploadTask.on("state_changed", (snapshot) => {
+				if (snapshot.bytesTransferred / snapshot.totalBytes === 1) {
+					getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+						callback(downloadURL);
+					});
+				}
+			});
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
+	async storeElectionData(data, callback) {
+		try {
+			// Store basic data
+			let basicData = { name: data.name, desc: data.desc, author: data.author };
+			let response = await addDoc(collection(this.db, "elections"), basicData);
+			data.categories.forEach((category) => {
+				let categoryData = { name: category.name, limit: category.limit };
+				addDoc(collection(this.db, "elections", response.id, "categories"), categoryData).then((res) => {
+					category.candidates.forEach(async (candidate) => {
+						await addDoc(collection(this.db, "elections", response.id, "categories", res.id, "candidates"), candidate);
+					});
+				});
+			});
+			// Callback election Res to be used to store the voters of the election
+			callback(response);
+		} catch (error) {
+			console.log(error);
+			callback({ error: "true" });
+		}
+	}
+
+	async storeVoter(password, id, election_id, callback) {
+		try {
+			await addDoc(collection(this.db, "elections", election_id, "voters"), { password, id });
+			callback("success");
+		} catch (e) {
+			console.log(e);
 		}
 	}
 }

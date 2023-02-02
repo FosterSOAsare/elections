@@ -53,7 +53,7 @@ const Category = ({ name, categoryIndex, candidates = [], type, limit }) => {
 				</div>
 			)}
 
-			{!done && type !== "preview" && (
+			{!done && type !== "preview" && showContent && (
 				<div className="markDone">
 					<button
 						className="button__primary"

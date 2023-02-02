@@ -3,12 +3,14 @@ import React, { createContext, useContext, useState, useReducer, useEffect } fro
 const ElectionContext = createContext();
 
 const ElectionProvider = ({ children }) => {
-	let startUp = { step: 2, data: { categories: [] } };
+	let startUp = { step: 1, data: { categories: [] } };
 	const [electionData, electionDataDispatchFunc] = useReducer(electionDataFunc, { ...(JSON.parse(localStorage.getItem("electionData")) || { ...startUp }) });
 	const [agreeToRules, setAgreeToRules] = useState({ state: true, next: true });
 	const [editDataIndex, setEditDataIndex] = useState({ candidateIndex: null, categoryIndex: null });
 	const [showCategoryForm, setShowCategoryForm] = useState(false);
 	const [showCandidateForm, setShowCandidateForm] = useState({ display: false, categoryIndex: null });
+	const [stored, setStored] = useState(false);
+	console.log(electionData);
 
 	useEffect(() => {
 		localStorage.setItem("electionData", JSON.stringify(electionData));
@@ -17,6 +19,8 @@ const ElectionProvider = ({ children }) => {
 		switch (action.type) {
 			case "setData":
 				return { step: electionData.step + 1, data: { ...electionData.data, ...action.payload } };
+			case "clearData":
+				return startUp;
 			case "prevStep":
 				return { ...electionData, step: electionData.step - 1 };
 			case "nextStep":
@@ -117,6 +121,8 @@ const ElectionProvider = ({ children }) => {
 				setEditDataIndex,
 				updateCategory,
 				updateCandidate,
+				stored,
+				setStored,
 			}}>
 			{children}
 		</ElectionContext.Provider>
