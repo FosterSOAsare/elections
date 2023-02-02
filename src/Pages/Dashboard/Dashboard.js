@@ -8,11 +8,12 @@ const Dashboard = () => {
 	const { firebase, credentials } = useAppContext();
 
 	useEffect(() => {
-		firebase.fetchUserElections(credentials?.userId, (res) => {
+		firebase.fetchUserElections(credentials?.user?.username, (res) => {
+			console.log(res);
 			if (res.error) return;
 			setUserElections(res);
 		});
-	}, [firebase, credentials?.userId]);
+	}, [firebase, credentials?.user?.username]);
 	return (
 		<main className="container dashboard">
 			<div className="elections">

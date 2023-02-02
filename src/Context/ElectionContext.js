@@ -10,7 +10,6 @@ const ElectionProvider = ({ children }) => {
 	const [showCategoryForm, setShowCategoryForm] = useState(false);
 	const [showCandidateForm, setShowCandidateForm] = useState({ display: false, categoryIndex: null });
 	const [stored, setStored] = useState(false);
-	console.log(electionData);
 
 	useEffect(() => {
 		localStorage.setItem("electionData", JSON.stringify(electionData));
@@ -54,8 +53,11 @@ const ElectionProvider = ({ children }) => {
 		setShowCategoryForm(false);
 	}
 	function storeCandidate(data) {
+		let categoryIndex = showCandidateForm.categoryIndex || data.categoryIndex;
+
+		if (data.categoryIndex) delete data.categoryIndex;
 		let categories = electionData.data.categories.map((e, index) => {
-			return index === showCandidateForm.categoryIndex ? { ...e, candidates: [...e.candidates, data] } : e;
+			return index === categoryIndex ? { ...e, candidates: [...e.candidates, data] } : e;
 		});
 		electionDataDispatchFunc({ type: "storeCategory", payload: categories });
 		setShowCandidateForm({ display: false, categoryIndex: null });

@@ -1,0 +1,34 @@
+.election {
+	.intro {
+		margin-bottom: 10px;
+		text-align: center;
+	}
+	h3.intro {
+		color: $whiteText2;
+	}
+	p.intro {
+		opacity: 0.8;
+		margin-bottom: 20px;
+	}
+	.notes {
+		padding: 0 10px;
+		p {
+			@include flex(flex-start, center);
+			font-weight: bold;
+			font-family: "Lato", sans-serif;
+			span {
+				margin-right: 10px;
+				display: block;
+				height: 7px;
+				width: 7px;
+				border-radius: 50%;
+				font-weight: bold;
+				background-color: $error;
+				font-size: 20px;
+			}
+		}
+	}
+	.components {
+		padding: 20px 0;
+	}
+}

@@ -106,9 +106,9 @@ class Firebase {
 		}
 	}
 
-	async fetchUserElections(userId, callback) {
+	async fetchUserElections(username, callback) {
 		try {
-			let q = query(collection(this.db, "elections"), where("author", "==", userId));
+			let q = query(collection(this.db, "elections"), where("author", "==", username));
 			onSnapshot(q, (res) => {
 				if (res.empty) {
 					callback({ empty: true });
@@ -137,7 +137,7 @@ class Firebase {
 				}
 			});
 		} catch (e) {
-			console.log(e);
+			callback({ error: true });
 		}
 	}
 
@@ -157,7 +157,6 @@ class Firebase {
 			// Callback election Res to be used to store the voters of the election
 			callback(response);
 		} catch (error) {
-			console.log(error);
 			callback({ error: "true" });
 		}
 	}
@@ -167,7 +166,44 @@ class Firebase {
 			await addDoc(collection(this.db, "elections", election_id, "voters"), { password, id });
 			callback("success");
 		} catch (e) {
-			console.log(e);
+			callback({ error: true });
+		}
+	}
+
+	async fetchElectionWithId(election_id, callback) {
+		try {
+			onSnapshot(doc(this.db, "elections", election_id), async (res) => {
+				callback({ ...res.data(), election_id, categories: [] });
+			});
+		} catch (e) {
+			callback({ error: true });
+		}
+	}
+
+	async fetchCategories(election_id, callback) {
+		try {
+			onSnapshot(collection(this.db, "elections", election_id, "categories"), (res) => {
+				callback(
+					res.docs.map((e) => {
+						return { ...e.data(), category_id: e.id };
+					})
+				);
+			});
+		} catch (e) {
+			callback({ error: true });
+		}
+	}
+	async fetchCandidates(election_id, category_id, callback) {
+		try {
+			onSnapshot(collection(this.db, "elections", election_id, "categories", category_id, "candidates"), (res) => {
+				callback(
+					res.docs.map((e) => {
+						return { ...e.data(), candidate_id: e.id };
+					})
+				);
+			});
+		} catch (e) {
+			callback({ error: true });
 		}
 	}
 }
