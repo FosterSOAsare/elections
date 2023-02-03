@@ -173,7 +173,15 @@ class Firebase {
 	async fetchElectionWithId(election_id, callback) {
 		try {
 			onSnapshot(doc(this.db, "elections", election_id), async (res) => {
-				callback({ ...res.data(), election_id, categories: [] });
+				let categories = new Promise((resolve) => {
+					this.fetchCategories(election_id, (res) => {
+						resolve(res);
+					});
+				});
+
+				categories = await Promise.resolve(categories);
+				let electionData = { ...res.data(), election_id: res.id, categories };
+				callback(electionData);
 			});
 		} catch (e) {
 			callback({ error: true });
@@ -182,12 +190,19 @@ class Firebase {
 
 	async fetchCategories(election_id, callback) {
 		try {
-			onSnapshot(collection(this.db, "elections", election_id, "categories"), (res) => {
-				callback(
-					res.docs.map((e) => {
-						return { ...e.data(), category_id: e.id };
-					})
-				);
+			onSnapshot(collection(this.db, "elections", election_id, "categories"), async (categories) => {
+				categories = categories.docs.map(async (category) => {
+					let candidates = await new Promise((resolve) => {
+						this.fetchCandidates(election_id, category.id, (res) => {
+							resolve(res);
+						});
+					});
+					candidates = await Promise.resolve(candidates);
+					return { ...category.data(), category_id: category.id, candidates: [...candidates] };
+				});
+				categories = await Promise.all(categories);
+
+				callback(categories);
 			});
 		} catch (e) {
 			callback({ error: true });

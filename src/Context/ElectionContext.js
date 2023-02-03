@@ -17,13 +17,15 @@ const ElectionProvider = ({ children }) => {
 	function electionDataFunc(electionData, action) {
 		switch (action.type) {
 			case "setData":
-				return { step: electionData.step + 1, data: { ...electionData.data, ...action.payload } };
+				return { ...electionData, data: { ...electionData.data, ...action.payload } };
+			case "resetData":
+				return { step: 1, data: {} };
 			case "clearData":
 				return startUp;
 			case "prevStep":
-				return { ...electionData, step: electionData.step - 1 };
+				return { ...electionData, step: parseInt(electionData.step) - 1 };
 			case "nextStep":
-				return { ...electionData, step: electionData.step + 1 };
+				return { ...electionData, step: parseInt(electionData.step) + 1 };
 			case "storeCategory":
 				return { ...electionData, data: { ...electionData.data, categories: action.payload } };
 			case "storeProperty":

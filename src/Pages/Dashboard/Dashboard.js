@@ -9,7 +9,6 @@ const Dashboard = () => {
 
 	useEffect(() => {
 		firebase.fetchUserElections(credentials?.user?.username, (res) => {
-			console.log(res);
 			if (res.error) return;
 			setUserElections(res);
 		});

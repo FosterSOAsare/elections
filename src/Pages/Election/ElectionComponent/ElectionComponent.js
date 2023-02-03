@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 
 const ElectionComponent = ({ election_id, name, category_id, categoryIndex, candidates, limit, votes, storeVote }) => {
+	const [actives, setActives] = useState(votes[categoryIndex] || []);
+
 	function selectCandidate(candidateIndex) {
-		limit = parseInt(limit);
-		if (votes.length === limit) {
-			// Replace the first
-		}
+		storeVote(categoryIndex, [candidateIndex]);
+		setActives([candidateIndex]);
 	}
 
 	// Fetch Candidates
@@ -23,7 +23,7 @@ const ElectionComponent = ({ election_id, name, category_id, categoryIndex, cand
 										<p>{e.name}</p>
 									</div>
 								</>
-								{votes && votes.includes(index) && (
+								{votes && actives.includes(index) && (
 									<div className="cover">
 										<i className="fa-solid fa-check"></i>
 										<p>Selected</p>

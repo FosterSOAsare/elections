@@ -7,42 +7,19 @@ const Election = () => {
 	const { electionData, electionDataDispatchFunc } = useElectionContext();
 	const [votes, setVotes] = useState([]);
 	const { firebase } = useAppContext();
-
 	// Fetch election
 	let { electionId } = useParams();
 	useEffect(() => {
 		firebase.fetchElectionWithId(electionId, (res) => {
+			electionDataDispatchFunc({ type: "resetData" });
 			electionDataDispatchFunc({ type: "setData", payload: res });
-		});
-		firebase.fetchCategories(electionId, async (categories) => {
-			// fetch candidates
-			let results = [];
-			categories.forEach((category) => {
-				let promise = new Promise((resolve, reject) => {
-					firebase.fetchCandidates(electionId, category.category_id, (candidates) => {
-						resolve({ ...category, candidates });
-					});
-				});
-				results.push(promise);
-			});
-			results = await Promise.all(results);
-
-			electionDataDispatchFunc({ type: "storeCategory", payload: results });
-
-			// Store Default votes as empty arrays
-			setVotes(
-				results.map((e) => {
-					return [];
-				})
-			);
 		});
 	}, [firebase, electionId, electionDataDispatchFunc]);
 
 	function storeVote(categoryIndex, newVotes) {
-		let newData = votes.map((e, index) => {
-			return index === categoryIndex ? newVotes : e;
-		});
-		setVotes(newData);
+		let newData = votes;
+		newData[categoryIndex] = newVotes;
+		setVotes((prev) => newData);
 	}
 
 	return (
@@ -63,9 +40,10 @@ const Election = () => {
 			</div>
 
 			<section className="components">
-				{electionData.data.categories.map((e, index) => {
-					return <ElectionComponent key={index} {...e} election_id={electionId} categoryIndex={index} votes={votes[index]} storeVote={storeVote} />;
-				})}
+				{electionData.data.categories &&
+					electionData.data.categories.map((e, index) => {
+						return <ElectionComponent key={index} {...e} election_id={electionId} categoryIndex={index} votes={votes} storeVote={storeVote} />;
+					})}
 			</section>
 		</main>
 	);
