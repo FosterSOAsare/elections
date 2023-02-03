@@ -4,8 +4,17 @@ const ElectionComponent = ({ election_id, name, category_id, categoryIndex, cand
 	const [actives, setActives] = useState(votes[categoryIndex] || []);
 
 	function selectCandidate(candidateIndex) {
-		storeVote(categoryIndex, [candidateIndex]);
-		setActives([candidateIndex]);
+		limit = parseInt(limit);
+		let selected = actives;
+		if (actives.length === limit) {
+			selected.shift();
+			selected = [...selected, candidateIndex];
+		} else {
+			selected = [...actives, candidateIndex];
+		}
+
+		storeVote(categoryIndex, selected);
+		setActives(selected);
 	}
 
 	// Fetch Candidates
@@ -33,7 +42,7 @@ const ElectionComponent = ({ election_id, name, category_id, categoryIndex, cand
 						);
 					})}
 				</div>
-				<p className="limit">User can select {parseInt(limit) === 1 ? "only 1 candidate" : `${limit} candidatess`}</p>
+				<p className="limit">User can select {parseInt(limit) === 1 ? "only 1 candidate" : `${limit} candidates`}</p>
 			</div>
 		</section>
 	);
