@@ -73,9 +73,5 @@
 		height: 40vh;
 		@include flex(center, center);
 		flex-direction: column;
-		img {
-			width: 150px;
-			height: 150px;
-		}
 	}
 }

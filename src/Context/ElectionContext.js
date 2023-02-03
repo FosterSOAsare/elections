@@ -41,6 +41,7 @@ const ElectionProvider = ({ children }) => {
 		let formData = new FormData(form);
 		let data = Object.fromEntries(formData.entries());
 		electionDataDispatchFunc({ type: "setData", payload: data });
+		electionDataDispatchFunc({ type: "nextStep", payload: data });
 	}
 	function prevStep() {
 		electionDataDispatchFunc({ type: "prevStep" });

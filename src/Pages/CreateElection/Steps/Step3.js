@@ -61,6 +61,10 @@ const Step3 = () => {
 
 		// Store election data
 	}
+	function updateElection(e) {
+		e.preventDefault();
+		console.log(electionData);
+	}
 	return (
 		<section className="step3">
 			{!waiting.display && (
@@ -83,15 +87,15 @@ const Step3 = () => {
 						<button className="button__secondary" onClick={() => prevStep()}>
 							Prev
 						</button>
-						<button className="button__primary" onClick={storeElection}>
-							Save Election
+						<button className="button__primary" onClick={electionData?.data?.election_id ? updateElection : storeElection}>
+							{electionData?.data?.election_id ? "Update" : "Save"} Election
 						</button>
 					</div>
 				</>
 			)}
 			{waiting.display && (
 				<div className="waiting">
-					<img src={LoadingGif} alt="Loading" />
+					<img src={LoadingGif} alt="Loading" className="loading__img" />
 					<p>{waiting.text}</p>
 				</div>
 			)}

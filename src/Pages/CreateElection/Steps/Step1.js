@@ -3,6 +3,7 @@ import { useElectionContext } from "../../../Context/ElectionContext";
 
 const Step1 = () => {
 	const { nextStep, setAgreeToRules, electionData, electionDataDispatchFunc } = useElectionContext();
+	console.log(electionData);
 	function cancelElection(e) {
 		e.preventDefault();
 		setAgreeToRules({ state: false, next: false });
@@ -27,7 +28,11 @@ const Step1 = () => {
 					<button className="button__secondary" onClick={cancelElection}>
 						Cancel
 					</button>
-					<button className="button__primary" onClick={(e) => nextStep(e, formRef.current)}>
+					<button
+						className="button__primary"
+						onClick={(e) => {
+							nextStep(e, formRef.current);
+						}}>
 						Next
 					</button>
 				</div>

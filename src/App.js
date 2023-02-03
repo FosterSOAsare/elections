@@ -69,6 +69,13 @@ function App() {
 								<CreateElection />
 							</LogInRequired>
 						}></Route>
+					<Route
+						path="edit/:electionId"
+						element={
+							<LogInRequired>
+								<CreateElection />
+							</LogInRequired>
+						}></Route>
 					<Route path="election/:electionId" element={<Election />}></Route>
 				</Route>
 			</Routes>

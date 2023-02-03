@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, applyActionCode } from "firebase/auth";
-import { collection, query, where, getFirestore, getDocs, setDoc, addDoc, doc, onSnapshot } from "firebase/firestore";
+import { collection, query, where, getFirestore, getDocs, setDoc, addDoc, doc, onSnapshot, updateDoc, serverTimestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 class Firebase {
@@ -144,7 +144,7 @@ class Firebase {
 	async storeElectionData(data, callback) {
 		try {
 			// Store basic data
-			let basicData = { name: data.name, desc: data.desc, author: data.author };
+			let basicData = { name: data.name, desc: data.desc, author: data.author, status: "pending", timestamp: serverTimestamp() };
 			let response = await addDoc(collection(this.db, "elections"), basicData);
 			data.categories.forEach((category) => {
 				let categoryData = { name: category.name, limit: category.limit };
@@ -178,9 +178,15 @@ class Firebase {
 						resolve(res);
 					});
 				});
+				let voters = new Promise((resolve) => {
+					this.fetchVoters(election_id, (res) => {
+						resolve(res);
+					});
+				});
 
 				categories = await Promise.resolve(categories);
-				let electionData = { ...res.data(), election_id: res.id, categories };
+				voters = await Promise.resolve(voters);
+				let electionData = { ...res.data(), election_id: res.id, categories, voters: voters.length };
 				callback(electionData);
 			});
 		} catch (e) {
@@ -208,6 +214,20 @@ class Firebase {
 			callback({ error: true });
 		}
 	}
+
+	async fetchVoters(election_id, callback) {
+		try {
+			onSnapshot(collection(this.db, "elections", election_id, "voters"), (voters) => {
+				voters = voters.docs.map((voter) => {
+					return { ...voter.data(), voter_id: voter.id };
+				});
+
+				callback(voters);
+			});
+		} catch (e) {
+			callback({ error: true });
+		}
+	}
 	async fetchCandidates(election_id, category_id, callback) {
 		try {
 			onSnapshot(collection(this.db, "elections", election_id, "categories", category_id, "candidates"), (res) => {
@@ -217,6 +237,15 @@ class Firebase {
 					})
 				);
 			});
+		} catch (e) {
+			callback({ error: true });
+		}
+	}
+
+	updateElectionStatus(electionId, status, callback) {
+		try {
+			updateDoc(doc(this.db, "elections", electionId), { status });
+			callback("success");
 		} catch (e) {
 			callback({ error: true });
 		}

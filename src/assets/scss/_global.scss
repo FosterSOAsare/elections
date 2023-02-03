@@ -16,6 +16,7 @@ $success: green;
 	height: auto;
 	margin: 0 auto;
 	max-width: 1024px;
+	// padding-bottom: 50px;
 }
 * {
 	padding: 0;
@@ -41,7 +42,7 @@ li {
 body {
 	width: 100%;
 	min-height: 100vh;
-	padding-bottom: 30vh;
+	padding-bottom: 50px;
 }
 h3 {
 	color: $whiteText1;
@@ -98,7 +99,10 @@ i {
 	border: 2px solid $whiteText1;
 	background-color: transparent;
 }
-
+.button__error {
+	color: $error;
+	border: 2px solid $error;
+}
 .button1 {
 	@include flex(space-between, center);
 	gap: 5px;
@@ -158,4 +162,9 @@ button.disabled {
 	button {
 		margin: 0;
 	}
+}
+
+img.loading__img {
+	width: 150px;
+	height: 150px;
 }

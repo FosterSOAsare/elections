@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Rules = ({ setAgreeToRules, agreeToRules }) => {
+	const navigate = useNavigate();
 	return (
 		<div className="rules">
 			<h3>Create a new Election</h3>
@@ -19,9 +21,18 @@ const Rules = ({ setAgreeToRules, agreeToRules }) => {
 				<label htmlFor="agree">I have read and agree to the rules above</label>
 			</div>
 
-			<button className={`button__primary ${agreeToRules?.state ? "" : "disabled"}`} disabled={!agreeToRules.state} onClick={() => setAgreeToRules({ state: true, next: true })}>
-				Continue
-			</button>
+			<div className="actions">
+				<button className={`button__primary ${agreeToRules?.state ? "" : "disabled"}`} disabled={!agreeToRules.state} onClick={() => setAgreeToRules({ state: true, next: true })}>
+					Continue
+				</button>
+				<button
+					className="button__secondary"
+					onClick={() => {
+						navigate("/");
+					}}>
+					Cancel
+				</button>
+			</div>
 		</div>
 	);
 };

@@ -1,0 +1,11 @@
+.loading {
+	@include flex(center, center);
+	flex-direction: column;
+	height: 90vh;
+	p {
+		font-weight: bold;
+		letter-spacing: 2px;
+		font-size: 20px;
+		margin-top: -20px;
+	}
+}

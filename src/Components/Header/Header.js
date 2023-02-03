@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useAppContext } from "../../Context/AppContext";
+import { NavLink } from "react-router-dom";
 
 const Header = () => {
 	const { credentials, credentialsDispatchFunc } = useAppContext();
@@ -14,8 +15,12 @@ const Header = () => {
 				<h3>Elections</h3>
 				<nav>
 					<ul>
-						<li>My Elections</li>
-						<li>Create New</li>
+						<li>
+							<NavLink to="/dashboard"> My Elections</NavLink>
+						</li>
+						<li>
+							<NavLink to="/new">Create New</NavLink>
+						</li>
 						<li className="logout" onClick={() => credentialsDispatchFunc({ type: "logOut" })}>
 							Logout
 						</li>
