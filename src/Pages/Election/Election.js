@@ -4,10 +4,12 @@ import { useAppContext } from "../../Context/AppContext";
 import { useElectionContext } from "../../Context/ElectionContext";
 import Loading from "../../Components/Loading/Loading";
 import ElectionComponent from "./ElectionComponent/ElectionComponent";
+import NotFound from "../../Components/NotFound/NotFound";
 const Election = () => {
 	const { electionData, electionDataDispatchFunc } = useElectionContext();
 	const [votes, setVotes] = useState([]);
-	const { firebase } = useAppContext();
+	const { firebase, credentials, notFound, setNotFound } = useAppContext();
+
 	const navigate = useNavigate();
 	const [loading, setLoading] = useState(true);
 	// Fetch election
@@ -26,6 +28,13 @@ const Election = () => {
 		setVotes((prev) => newData);
 	}
 
+	// Check found
+	useEffect(() => {
+		if (electionData.data.status === "pending") {
+			setNotFound(credentials?.user && credentials?.user?.username !== electionData?.data?.author);
+		}
+	}, [credentials, electionData.data, setNotFound]);
+
 	function updateStatus(status) {
 		firebase.updateElectionStatus(electionId, status, (res) => {
 			if (res.error) return;
@@ -35,65 +44,71 @@ const Election = () => {
 
 	return (
 		<>
-			{!loading && (
-				<main className="container election">
-					<h3 className="intro">Welcome to {electionData.data.name}</h3>
+			<>
+				{!loading && (
+					<>
+						{!notFound && (
+							<main className="container election">
+								<h3 className="intro">Welcome to {electionData.data.name}</h3>
+								<p className="intro">{electionData.data.desc}</p>
+								<div className="notes">
+									<p>
+										<span></span> Please click on a candidate to select the candidate
+									</p>
+									<p>
+										<span></span> Not clicking on any candidate leaves the category blank, hence no vote on the category
+									</p>
+									<p>
+										<span></span> Selection more than the limit will toggle the previous selections
+									</p>
+								</div>
 
-					<p className="intro">{electionData.data.desc}</p>
-					<div className="notes">
-						<p>
-							<span></span> Please click on a candidate to select the candidate
-						</p>
-						<p>
-							<span></span> Not clicking on any candidate leaves the category blank, hence no vote on the category
-						</p>
-						<p>
-							<span></span> Selection more than the limit will toggle the previous selections
-						</p>
-					</div>
+								<section className="components">
+									{electionData.data.categories &&
+										electionData.data.categories.map((e, index) => {
+											return <ElectionComponent key={index} {...e} election_id={electionId} categoryIndex={index} votes={votes} storeVote={storeVote} />;
+										})}
+								</section>
 
-					<section className="components">
-						{electionData.data.categories &&
-							electionData.data.categories.map((e, index) => {
-								return <ElectionComponent key={index} {...e} election_id={electionId} categoryIndex={index} votes={votes} storeVote={storeVote} />;
-							})}
-					</section>
-
-					<div className="actions">
-						{electionData.data.status === "pending" && (
-							<>
-								<button className="button__primary" onClick={() => updateStatus("pending")}>
-									Start Election
-								</button>
-								<button className="button__secondary" onClick={() => navigate(`/edit/${electionId}`)}>
-									Edit Election
-								</button>
-							</>
+								<div className="actions">
+									{electionData.data.status === "pending" && (
+										<>
+											<button className="button__primary" onClick={() => updateStatus("pending")}>
+												Start Election
+											</button>
+											<button className="button__secondary" onClick={() => navigate(`/edit/${electionId}`)}>
+												Edit Election
+											</button>
+										</>
+									)}
+									{electionData.data.status === "started" && (
+										<>
+											<button className="button__primary" onClick={() => updateStatus("completed")}>
+												Mark Completed
+											</button>
+											<button className="button__secondary" onClick={() => navigate(`/edit/${electionId}`)}>
+												Edit Election
+											</button>
+										</>
+									)}
+									{electionData.data.status === "completed" && (
+										<>
+											<button className="button__primary" onClick={() => navigate(`./results`)}>
+												View Results
+											</button>
+											<button className="button__secondary button__error" onClick={() => navigate(`/edit/${electionId}`)}>
+												Delete Election
+											</button>
+										</>
+									)}
+								</div>
+							</main>
 						)}
-						{electionData.data.status === "started" && (
-							<>
-								<button className="button__primary" onClick={() => updateStatus("completed")}>
-									Mark Completed
-								</button>
-								<button className="button__secondary" onClick={() => navigate(`/edit/${electionId}`)}>
-									Edit Election
-								</button>
-							</>
-						)}
-						{electionData.data.status === "completed" && (
-							<>
-								<button className="button__primary" onClick={() => navigate(`./results`)}>
-									View Results
-								</button>
-								<button className="button__secondary button__error" onClick={() => navigate(`/edit/${electionId}`)}>
-									Delete Election
-								</button>
-							</>
-						)}
-					</div>
-				</main>
-			)}
-			{loading && <Loading />}
+						{notFound && <NotFound />}
+					</>
+				)}
+				{loading && <Loading />}
+			</>
 		</>
 	);
 };

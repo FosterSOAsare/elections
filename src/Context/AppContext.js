@@ -1,11 +1,13 @@
-import React, { createContext, useContext, useEffect, useMemo, useReducer } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useReducer, useState } from "react";
 import Firebase from "../Utils/Firebase";
+import { useLocation } from "react-router-dom";
 
 const AppContext = createContext();
 
 const AppProvider = ({ children }) => {
 	const [credentials, credentialsDispatchFunc] = useReducer(credentailsFunc, { userId: localStorage.getItem("election:userId") || null, user: null });
-
+	const location = useLocation();
+	const [notFound, setNotFound] = useState(false);
 	const firebase = useMemo(() => {
 		return new Firebase();
 	}, []);
@@ -47,7 +49,11 @@ const AppProvider = ({ children }) => {
 		}
 	}, [credentials?.userId]);
 
-	return <AppContext.Provider value={{ firebase, credentials, credentialsDispatchFunc }}>{children}</AppContext.Provider>;
+	useEffect(() => {
+		setNotFound(false);
+	}, [location]);
+
+	return <AppContext.Provider value={{ firebase, credentials, credentialsDispatchFunc, notFound, setNotFound }}>{children}</AppContext.Provider>;
 };
 
 export function useAppContext() {
