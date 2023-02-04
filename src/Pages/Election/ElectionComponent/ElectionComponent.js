@@ -4,7 +4,6 @@ import { useElectionContext } from "../../../Context/ElectionContext";
 const ElectionComponent = ({ name, categoryIndex, candidates, limit, votes, storeVote }) => {
 	const [actives, setActives] = useState(votes[categoryIndex] || []);
 	const { electionData } = useElectionContext();
-	console.log(name, candidates);
 
 	function selectCandidate(candidateIndex) {
 		if (electionData.data.status === "started") {

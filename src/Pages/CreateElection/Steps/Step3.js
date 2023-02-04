@@ -64,7 +64,7 @@ const Step3 = () => {
 	function updateElection(e) {
 		e.preventDefault();
 		firebase.updateElectionData(electionData.data, electionData.data.election_id, (res) => {
-			if (res.error) return;
+			if (res?.error) return;
 			navigate(`/election/${electionData.data.election_id}`);
 		});
 	}
