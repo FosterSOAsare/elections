@@ -12,7 +12,6 @@ const Step3 = () => {
 	const [waiting, waitingDispatchFunc] = useReducer(waitingFunc, { display: false, text: "" });
 	const { firebase } = useAppContext();
 	const navigate = useNavigate();
-
 	function waitingFunc(waiting, action) {
 		switch (action.type) {
 			case "setDisplay":

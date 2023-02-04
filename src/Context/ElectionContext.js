@@ -19,7 +19,7 @@ const ElectionProvider = ({ children }) => {
 			case "setData":
 				return { ...electionData, data: { ...electionData.data, ...action.payload } };
 			case "resetData":
-				return { step: 3, data: {} };
+				return { step: 1, data: {} };
 			case "clearData":
 				return startUp;
 			case "prevStep":

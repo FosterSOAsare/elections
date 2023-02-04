@@ -13,6 +13,7 @@ const Election = () => {
 
 	const navigate = useNavigate();
 	const [loading, setLoading] = useState(true);
+
 	// Fetch election
 	let { electionId } = useParams();
 	useEffect(() => {
@@ -20,11 +21,14 @@ const Election = () => {
 
 		electionDataDispatchFunc({ type: "resetData" });
 		firebase.fetchElectionWithId(electionId, (res) => {
+			if (res.error) return;
+			setLoading(false);
+			if (res.empty) {
+				setNotFound(true);
+			}
 			electionDataDispatchFunc({ type: "setData", payload: res });
 		});
-
-		setLoading(false);
-	}, [firebase, electionId, electionDataDispatchFunc]);
+	}, [firebase, electionId, electionDataDispatchFunc, setNotFound]);
 
 	function storeVote(categoryIndex, newVotes) {
 		let newData = votes;
