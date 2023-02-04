@@ -254,50 +254,52 @@ class Firebase {
 			updateEditPromise = await Promise.resolve(updateEditPromise);
 			callback(updateEditPromise);
 		} catch (e) {
+			console.log(e);
 			callback({ error: true });
 		}
 	}
 	async updateCandidates(categoryCandidates, electionId, category_id, callback) {
 		try {
-			// This promise is used to wait for all the updates or adds that might occur in the candidates sub-collection.
-			let updateEditPromise = new Promise((resolve) => {
-				categoryCandidates.forEach(async (candidate) => {
-					//
-					let promise = "";
-					if (candidate.candidate_id) {
-						let candidate_id = candidate.candidate_id;
-						delete candidate.candidate_id;
-						// 	// Update
-						promise = new Promise(async (resolve) => resolve(await updateDoc(doc(this.db, "elections", electionId, "categories", category_id, "candidates", candidate_id), candidate)));
-					} else {
-						// 	// Add
-						promise = new Promise(async (resolve) => resolve(await addDoc(collection(this.db, "elections", electionId, "categories", category_id, "candidates"), candidate)));
-					}
-					// // After updating or adding , store candidates
-					promise = await Promise.resolve(promise);
-					resolve(promise);
-				});
+			// Fetch old data which does not include the newly created candidates
+
+			let storedCandidates = await getDocs(collection(this.db, "elections", electionId, "categories", category_id, "candidates"));
+			storedCandidates = storedCandidates.docs.map((e) => {
+				return { ...e.data(), candidate_id: e.id };
 			});
-			updateEditPromise = await Promise.resolve(updateEditPromise);
-			callback(updateEditPromise);
+			// This promise is used to wait for all the updates or adds that might occur in the candidates sub-collection.
+			let updateEditPromises = [];
+			categoryCandidates.forEach(async (candidate, index) => {
+				//
+				let promise = "";
+				if (candidate.candidate_id) {
+					let candidate_id = candidate.candidate_id;
+					let data = { name: candidate.name, imageURL: candidate.imageURL };
+					// Update
+					promise = new Promise(async (resolve) => resolve(await updateDoc(doc(this.db, "elections", electionId, "categories", category_id, "candidates", candidate_id), data)));
+				} else {
+					// 	// Add
+					promise = new Promise(async (resolve) => resolve(await addDoc(collection(this.db, "elections", electionId, "categories", category_id, "candidates"), candidate)));
+				}
+				// Push update or add promises to the updateEditPromises array to be waited for and resolved
+				updateEditPromises.push(promise);
+			});
+			await Promise.resolve(updateEditPromises);
 
-			// // Delete candidates that were deleted
-			// // Fetch stored candidates
-			// let storedCandidates = await getDocs(collection(this.db, "elections", electionId, "categories", category_id, "candidates"));
-			// storedCandidates = storedCandidates.docs.map((e) => {
-			// 	return { ...e.data(), candidate_id: e.id };
-			// });
-
-			// // Filter
-			// storedCandidates.forEach((storedCandidate) => {
-			// 	console.log(storedCandidate);
-			// 	console.log(categoryCandidates);
-			// 	// let found = categoryCandidates.find((e) => e.candidate_id === storedCandidate.category_id);
-			// 	// console.log(found);
-			// 	// if (!found) {
-			// 	// 	console.log(storedCandidate.category_id);
-			// 	// }
-			// });
+			// Delete candidates that were deleted using reference from the old data
+			// Store deletes in an array of promises to be resolved
+			let deletionPromises = [];
+			storedCandidates.forEach((storedCandidate, index) => {
+				let found = categoryCandidates.find((e) => {
+					return e.candidate_id === storedCandidate.candidate_id;
+				});
+				if (!found) {
+					deletionPromises.push(
+						new Promise(async (resolve) => resolve(await deleteDoc(doc(this.db, "elections", electionId, "categories", category_id, "candidates", storedCandidate.candidate_id))))
+					);
+				}
+			});
+			await Promise.all(deletionPromises);
+			callback("success");
 		} catch (e) {
 			callback({ error: true });
 		}

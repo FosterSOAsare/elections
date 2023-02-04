@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const Step3 = () => {
 	const { electionData, prevStep, electionDataDispatchFunc, setAgreeToRules } = useElectionContext();
+
 	const { credentials } = useAppContext();
 	const [waiting, waitingDispatchFunc] = useReducer(waitingFunc, { display: false, text: "" });
 	const { firebase } = useAppContext();
