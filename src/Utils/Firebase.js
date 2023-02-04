@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, applyActionCode } from "firebase/auth";
-import { collection, query, where, getFirestore, getDocs, setDoc, addDoc, doc, onSnapshot, updateDoc, serverTimestamp } from "firebase/firestore";
+import { collection, query, where, getFirestore, getDocs, setDoc, addDoc, deleteDoc, doc, onSnapshot, updateDoc, serverTimestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 class Firebase {
@@ -160,42 +160,153 @@ class Firebase {
 			callback({ error: "true" });
 		}
 	}
+	// async updateElectionData(data, electionId, callback) {
+	// 	try {
+	// 		let basicData = { name: data.name, desc: data.desc };
+	// 		// await updateDoc(doc(this.db, "elections", electionId), basicData);
+	// 		// // 	Update candidates and ategories
+	// 		await data.categories.forEach(async (category) => {
+	// 			let categoryData = { name: category.name, limit: category.limit };
+	// 			let candidatesPromise = [];
+	// 			// If user updates a category
+	// 			if (category.category_id) {
+	// 				updateDoc(doc(this.db, "elections", electionId, "categories", category.category_id), categoryData);
+	// 				category.candidates.forEach(async (candidate) => {
+	// 					if (candidate.candidate_id) {
+	// 						// If user updates a  candidate in the category
+	// 						let candidate_id = candidate.candidate_id;
+	// 						delete candidate.candidate_id;
+	// 						candidatePromise.push(updateDoc(doc(this.db, "elections", electionId, "categories", category.category_id, "candidates", candidate_id), candidate));
+	// 					} else {
+	// 						// If user adds a new candidate in the category
+	// 						await addDoc(collection(this.db, "elections", electionId, "categories", category.category_id, "candidates"), candidate);
+	// 					}
+	// 				});
+	// 			} else {
+	// 				// If user adds a new category and new candidates in the category
+	// 				await addDoc(collection(this.db, "elections", electionId, "categories"), categoryData).then((res) => {
+	// 					category.candidates.forEach(async (candidate) => {
+	// 						await addDoc(collection(this.db, "elections", electionId, "categories", res.id, "candidates"), candidate);
+	// 					});
+	// 				});
+	// 			}
+	// 		});
+
+	// 		// Check deletions
+	// 		// let categories = await getDocs(collection(this.db, "elections", electionId, "categories"));
+	// 		// categories.docs.forEach(async (e) => {
+	// 		// 	let found = data.categories.find((category) => {
+	// 		// 		return category.category_id === e.id;
+	// 		// 	});
+	// 		// 	if (!found) {
+	// 		// 		await deleteDoc(doc(this.db, "elections", electionId, "categories", e.id));
+	// 		// 	}
+	// 		// });
+	// 	} catch (error) {
+	// 		console.log(error);
+	// 		callback({ error: "true" });
+	// 	}
+	// }
+
 	async updateElectionData(data, electionId, callback) {
+		console.log(data);
 		try {
-			let basicData = { name: data.name, desc: data.desc };
-			await updateDoc(doc(this.db, "elections", electionId), basicData);
-			// 	// Update candidates and ategories
-			await data.categories.forEach(async (category) => {
-				let categoryData = { name: category.name, limit: category.limit };
-				// If user updates a category
-				if (category.category_id) {
-					await updateDoc(doc(this.db, "elections", electionId, "categories", category.category_id), categoryData);
-					category.candidates.forEach(async (candidate) => {
-						if (candidate.candidate_id) {
-							// If user updates a  candidate in the category
-							let candidate_id = candidate.candidate_id;
-							delete candidate.candidate_id;
-							await updateDoc(doc(this.db, "elections", electionId, "categories", category.category_id, "candidates", candidate_id), candidate);
-						} else {
-							// If user adds a new candidate in the category
-							await addDoc(collection(this.db, "elections", electionId, "categories", category.category_id, "candidates"), candidate);
-						}
-					});
-				} else {
-					// If user adds a new category and new candidates in the category
-					await addDoc(collection(this.db, "elections", electionId, "categories"), categoryData).then((res) => {
-						category.candidates.forEach(async (candidate) => {
-							await addDoc(collection(this.db, "elections", electionId, "categories", res.id, "candidates"), candidate);
-						});
-					});
-				}
-			});
-			callback("success");
-		} catch (error) {
-			console.log(error);
-			callback({ error: "true" });
+			// Update the base election
+			let baseData = { name: data.name, desc: data.desc };
+			await updateDoc(doc(this.db, "elections", electionId), baseData);
+
+			let promise = await new Promise((resolve) => this.updateCategories(data.categories, electionId, (res) => resolve(res)));
+			promise = Promise.resolve(promise);
+			console.log(promise);
+		} catch (e) {
+			console.log(e);
+			callback({ error: true });
 		}
 	}
+
+	async updateCategories(dataCategories, electionId, callback) {
+		try {
+			// Fetch stored categories
+			let categories = await getDocs(collection(this.db, "elections", electionId, "categories"));
+			categories = categories.docs.map((e) => {
+				return { ...e.data(), category_id: e.id };
+			});
+
+			// Update or add new category based on the electionData
+			dataCategories.forEach(async (category) => {
+				let categoryData = { name: category.name, limit: category.limit };
+				let promise = "";
+				if (category.category_id) {
+					// Update
+					promise = new Promise(async (resolve) => resolve(await updateDoc(doc(this.db, "elections", electionId, "categories", category.category_id), categoryData)));
+				} else {
+					// Add
+					promise = new Promise(async (resolve) => resolve(await addDoc(collection(this.db, "elections", electionId, "categories"), categoryData)));
+				}
+				// After updating or adding , store candidates
+
+				promise = await Promise.resolve(promise);
+
+				let category_id = category.category_id || promise?.id;
+
+				let candidates = new Promise((resolve) =>
+					this.updateCandidates(category.candidates, electionId, category_id, (res) => {
+						resolve(res);
+					})
+				);
+				console.log(candidates);
+			});
+		} catch (e) {
+			console.log(e);
+			console.log("error");
+		}
+	}
+	async updateCandidates(categoryCandidates, electionId, category_id, callback) {
+		try {
+			// This promise is used to wait for all the updates or adds that might occur in the candidates sub-collection.
+			let updateEditPromise = new Promise((resolve) => {
+				categoryCandidates.forEach(async (candidate) => {
+					//
+					let promise = "";
+					if (candidate.candidate_id) {
+						let candidate_id = candidate.candidate_id;
+						delete candidate.candidate_id;
+						// 	// Update
+						promise = new Promise(async (resolve) => resolve(await updateDoc(doc(this.db, "elections", electionId, "categories", category_id, "candidates", candidate_id), candidate)));
+					} else {
+						// 	// Add
+						promise = new Promise(async (resolve) => resolve(await addDoc(collection(this.db, "elections", electionId, "categories", category_id, "candidates"), candidate)));
+					}
+					// // After updating or adding , store candidates
+					promise = await Promise.resolve(promise);
+					resolve(promise);
+				});
+			});
+			await Promise.resolve(updateEditPromise);
+
+			// // Delete candidates that were deleted
+			// // Fetch stored candidates
+			// let storedCandidates = await getDocs(collection(this.db, "elections", electionId, "categories", category_id, "candidates"));
+			// storedCandidates = storedCandidates.docs.map((e) => {
+			// 	return { ...e.data(), candidate_id: e.id };
+			// });
+
+			// // Filter
+			// storedCandidates.forEach((storedCandidate) => {
+			// 	console.log(storedCandidate);
+			// 	console.log(categoryCandidates);
+			// 	// let found = categoryCandidates.find((e) => e.candidate_id === storedCandidate.category_id);
+			// 	// console.log(found);
+			// 	// if (!found) {
+			// 	// 	console.log(storedCandidate.category_id);
+			// 	// }
+			// });
+		} catch (e) {
+			console.log(e);
+			console.log("error");
+		}
+	}
+
 	async storeVoter(password, id, election_id, callback) {
 		try {
 			await addDoc(collection(this.db, "elections", election_id, "voters"), { password, id });
@@ -226,6 +337,7 @@ class Firebase {
 				categories = await Promise.resolve(categories);
 				voters = await Promise.resolve(voters);
 				let electionData = { ...res.data(), election_id: res.id, categories, voters: voters.length };
+
 				callback(electionData);
 			});
 		} catch (e) {

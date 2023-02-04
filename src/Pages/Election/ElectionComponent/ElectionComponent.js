@@ -1,20 +1,25 @@
 import React, { useState } from "react";
+import { useElectionContext } from "../../../Context/ElectionContext";
 
-const ElectionComponent = ({ election_id, name, category_id, categoryIndex, candidates, limit, votes, storeVote }) => {
+const ElectionComponent = ({ name, categoryIndex, candidates, limit, votes, storeVote }) => {
 	const [actives, setActives] = useState(votes[categoryIndex] || []);
+	const { electionData } = useElectionContext();
+	console.log(name, candidates);
 
 	function selectCandidate(candidateIndex) {
-		limit = parseInt(limit);
-		let selected = actives;
-		if (actives.length === limit) {
-			selected.shift();
-			selected = [...selected, candidateIndex];
-		} else {
-			selected = [...actives, candidateIndex];
-		}
+		if (electionData.data.status === "started") {
+			limit = parseInt(limit);
+			let selected = actives;
+			if (actives.length === limit) {
+				selected.shift();
+				selected = [...selected, candidateIndex];
+			} else {
+				selected = [...actives, candidateIndex];
+			}
 
-		storeVote(categoryIndex, selected);
-		setActives(selected);
+			storeVote(categoryIndex, selected);
+			setActives(selected);
+		}
 	}
 
 	// Fetch Candidates

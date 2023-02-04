@@ -9,6 +9,7 @@ const Election = () => {
 	const { electionData, electionDataDispatchFunc } = useElectionContext();
 	const [votes, setVotes] = useState([]);
 	const { firebase, credentials, notFound, setNotFound } = useAppContext();
+	let electionOwner = credentials?.user?.username === electionData?.data?.author;
 
 	const navigate = useNavigate();
 	const [loading, setLoading] = useState(true);
@@ -16,14 +17,14 @@ const Election = () => {
 	let { electionId } = useParams();
 	useEffect(() => {
 		// This added is for when a user updates the election. The update wil still be in progress
-		if (electionData?.data?.election_id !== electionId) {
-			firebase.fetchElectionWithId(electionId, (res) => {
-				electionDataDispatchFunc({ type: "resetData" });
-				electionDataDispatchFunc({ type: "setData", payload: res });
-			});
-		}
+
+		electionDataDispatchFunc({ type: "resetData" });
+		firebase.fetchElectionWithId(electionId, (res) => {
+			electionDataDispatchFunc({ type: "setData", payload: res });
+		});
+
 		setLoading(false);
-	}, [firebase, electionId, electionDataDispatchFunc, electionData?.data]);
+	}, [firebase, electionId, electionDataDispatchFunc]);
 
 	function storeVote(categoryIndex, newVotes) {
 		let newData = votes;
@@ -99,9 +100,11 @@ const Election = () => {
 											<button className="button__primary" onClick={() => navigate(`./results`)}>
 												View Results
 											</button>
-											<button className="button__secondary button__error" onClick={() => navigate(`/edit/${electionId}`)}>
-												Delete Election
-											</button>
+											{electionOwner && (
+												<button className="button__secondary button__error" onClick={() => navigate(`/edit/${electionId}`)}>
+													Delete Election
+												</button>
+											)}
 										</>
 									)}
 								</div>
