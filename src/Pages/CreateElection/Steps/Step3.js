@@ -7,7 +7,7 @@ import { useAppContext } from "../../../Context/AppContext";
 import { useNavigate } from "react-router-dom";
 
 const Step3 = () => {
-	const { electionData, prevStep, electionDataDispatchFunc, setAgreeToRules, setStored } = useElectionContext();
+	const { electionData, prevStep, electionDataDispatchFunc, setAgreeToRules } = useElectionContext();
 	const { credentials } = useAppContext();
 	const [waiting, waitingDispatchFunc] = useReducer(waitingFunc, { display: false, text: "" });
 	const { firebase } = useAppContext();
@@ -50,8 +50,7 @@ const Step3 = () => {
 							electionDataDispatchFunc({ type: "clearData" });
 							waitingDispatchFunc({ type: "reset" });
 							setAgreeToRules({ state: false, next: false });
-							setStored(true);
-							setStored(false);
+							navigate("/");
 						}
 					});
 				}

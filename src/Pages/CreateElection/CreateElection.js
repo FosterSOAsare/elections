@@ -4,13 +4,13 @@ import Step1 from "./Steps/Step1";
 import Step2 from "./Steps/Step2";
 import Step3 from "./Steps/Step3";
 import { useElectionContext } from "../../Context/ElectionContext";
-import { Navigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useAppContext } from "../../Context/AppContext";
 import NotFound from "../../Components/NotFound/NotFound";
 import Loading from "../../Components/Loading/Loading";
 
 const CreateElection = () => {
-	const { electionData, electionDataDispatchFunc, agreeToRules, setAgreeToRules, stored } = useElectionContext();
+	const { electionData, electionDataDispatchFunc, agreeToRules, setAgreeToRules } = useElectionContext();
 	const { electionId } = useParams();
 	const { firebase, notFound, setNotFound } = useAppContext();
 	const [loading, setLoading] = useState(false);
@@ -52,7 +52,6 @@ const CreateElection = () => {
 									{electionData.step === 3 && <Step3 />}
 								</>
 							)}
-							{stored && <Navigate to="/" />}
 						</div>
 					)}
 					{notFound && <NotFound />}

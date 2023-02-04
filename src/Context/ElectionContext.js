@@ -37,7 +37,7 @@ const ElectionProvider = ({ children }) => {
 		}
 	}
 
-	function nextStep(e, form) {
+	function nextStep(e) {
 		e.preventDefault();
 		electionDataDispatchFunc({ type: "nextStep" });
 		setShowCandidateForm(false);

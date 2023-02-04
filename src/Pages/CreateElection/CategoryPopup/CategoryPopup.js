@@ -32,7 +32,6 @@ const CategoryPopup = () => {
 			if (editDataIndex?.categoryIndex !== null && electionData?.data?.categories[editDataIndex?.categoryIndex]) {
 				updateCategory(categoryData, editDataIndex?.categoryIndex);
 			} else {
-				console.log(electionData);
 				storeCategory(categoryData);
 			}
 		}
