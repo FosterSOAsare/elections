@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, applyActionCode } from "firebase/auth";
-import { collection, query, where, getFirestore, getDocs, setDoc, addDoc, doc, onSnapshot, updateDoc, serverTimestamp } from "firebase/firestore";
+import { collection, query, where, getFirestore, getDocs, setDoc, addDoc, deleteDoc, doc, onSnapshot, updateDoc, serverTimestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 class Firebase {
@@ -160,7 +160,42 @@ class Firebase {
 			callback({ error: "true" });
 		}
 	}
-
+	async updateElectionData(data, electionId, callback) {
+		try {
+			let basicData = { name: data.name, desc: data.desc };
+			await updateDoc(doc(this.db, "elections", electionId), basicData);
+			// 	// Update candidates and ategories
+			data.categories.forEach(async (category) => {
+				let categoryData = { name: category.name, limit: category.limit };
+				// If user updates a category
+				if (category.category_id) {
+					await updateDoc(doc(this.db, "elections", electionId, "categories", category.category_id), categoryData);
+					category.candidates.forEach(async (candidate) => {
+						if (candidate.candidate_id) {
+							// If user updates a  candidate in the category
+							let candidate_id = candidate.candidate_id;
+							delete candidate.candidate_id;
+							await updateDoc(doc(this.db, "elections", electionId, "categories", category.category_id, "candidates", candidate_id), candidate);
+						} else {
+							// If user adds a new candidate in the category
+							await addDoc(collection(this.db, "elections", electionId, "categories", category.category_id, "candidates"), candidate);
+						}
+					});
+				} else {
+					// If user adds a new category and new candidates in the category
+					addDoc(collection(this.db, "elections", electionId, "categories"), categoryData).then((res) => {
+						category.candidates.forEach(async (candidate) => {
+							await addDoc(collection(this.db, "elections", electionId, "categories", res.id, "candidates"), candidate);
+						});
+					});
+				}
+			});
+			// 	callback("success");
+		} catch (error) {
+			console.log(error);
+			callback({ error: "true" });
+		}
+	}
 	async storeVoter(password, id, election_id, callback) {
 		try {
 			await addDoc(collection(this.db, "elections", election_id, "voters"), { password, id });

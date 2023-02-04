@@ -36,12 +36,13 @@ const ElectionProvider = ({ children }) => {
 				return electionData;
 		}
 	}
+
 	function nextStep(e, form) {
 		e.preventDefault();
-		let formData = new FormData(form);
-		let data = Object.fromEntries(formData.entries());
-		electionDataDispatchFunc({ type: "setData", payload: data });
-		electionDataDispatchFunc({ type: "nextStep", payload: data });
+		electionDataDispatchFunc({ type: "nextStep" });
+		setShowCandidateForm(false);
+		setShowCategoryForm(false);
+		setEditDataIndex({ categoryIndex: null, candidateIndex: null });
 	}
 	function prevStep() {
 		electionDataDispatchFunc({ type: "prevStep" });
@@ -56,7 +57,7 @@ const ElectionProvider = ({ children }) => {
 		setShowCategoryForm(false);
 	}
 	function storeCandidate(data) {
-		let categoryIndex = showCandidateForm.categoryIndex || data.categoryIndex;
+		let categoryIndex = showCandidateForm.categoryIndex !== null ? showCandidateForm.categoryIndex : data.categoryIndex !== null ? data.categoryIndex : null;
 
 		if (data.categoryIndex) delete data.categoryIndex;
 		let categories = electionData.data.categories.map((e, index) => {

@@ -9,8 +9,12 @@ const CandidatePopup = () => {
 	const { firebase } = useAppContext();
 	const [waiting, setWaiting] = useState(false);
 
+	let editData = null;
+	if (editDataIndex?.categoryIndex !== null && editDataIndex?.categoryIndex !== null) {
+		editData = electionData?.data?.categories[editDataIndex?.categoryIndex]?.candidates[editDataIndex?.candidateIndex];
+	}
 	const [candidateData, setCandidateData] = useState(
-		electionData?.data?.categories[editDataIndex?.categoryIndex]?.candidates[editDataIndex?.candidateIndex] || {
+		editData || {
 			name: "",
 			imageURL: "",
 		}

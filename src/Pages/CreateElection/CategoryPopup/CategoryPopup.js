@@ -5,8 +5,13 @@ const CategoryPopup = () => {
 	const { electionData, setShowCategoryForm, storeCategory, editDataIndex, updateCategory, setEditDataIndex } = useElectionContext();
 
 	const formRef = useRef(null);
+	let editData = null;
+	if (editDataIndex?.categoryIndex !== null) {
+		editData = electionData?.data?.categories[editDataIndex?.categoryIndex];
+	}
+
 	const [categoryData, setCategoryData] = useState(
-		electionData.data?.categories[editDataIndex.categoryIndex] || {
+		editData || {
 			name: "",
 			limit: "",
 			candidates: [],
@@ -23,8 +28,10 @@ const CategoryPopup = () => {
 
 	function handleSubmit(e) {
 		e.preventDefault();
-		if (electionData.data?.categories[editDataIndex.categoryIndex]) {
-			updateCategory(categoryData, editDataIndex.categoryIndex);
+		if (electionData?.data?.categories) {
+			if (editDataIndex?.categoryIndex !== null && electionData?.data?.categories[editDataIndex?.categoryIndex]) {
+				updateCategory(categoryData, editDataIndex?.categoryIndex);
+			}
 		} else {
 			storeCategory(categoryData);
 		}

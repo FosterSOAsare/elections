@@ -63,7 +63,7 @@ const Step3 = () => {
 	}
 	function updateElection(e) {
 		e.preventDefault();
-		console.log(electionData);
+		firebase.updateElectionData(electionData.data, electionData.data.election_id, (res) => {});
 	}
 	return (
 		<section className="step3">

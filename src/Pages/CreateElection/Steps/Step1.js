@@ -3,7 +3,7 @@ import { useElectionContext } from "../../../Context/ElectionContext";
 
 const Step1 = () => {
 	const { nextStep, setAgreeToRules, electionData, electionDataDispatchFunc } = useElectionContext();
-	console.log(electionData);
+
 	function cancelElection(e) {
 		e.preventDefault();
 		setAgreeToRules({ state: false, next: false });
