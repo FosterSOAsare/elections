@@ -173,6 +173,10 @@ class Firebase {
 	async fetchElectionWithId(election_id, callback) {
 		try {
 			onSnapshot(doc(this.db, "elections", election_id), async (res) => {
+				if (!res.exists()) {
+					callback({ empty: true });
+					return;
+				}
 				let categories = new Promise((resolve) => {
 					this.fetchCategories(election_id, (res) => {
 						resolve(res);
