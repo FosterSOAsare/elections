@@ -15,12 +15,15 @@ const Election = () => {
 	// Fetch election
 	let { electionId } = useParams();
 	useEffect(() => {
-		firebase.fetchElectionWithId(electionId, (res) => {
-			electionDataDispatchFunc({ type: "resetData" });
-			electionDataDispatchFunc({ type: "setData", payload: res });
-			setLoading(false);
-		});
-	}, [firebase, electionId, electionDataDispatchFunc]);
+		// This added is for when a user updates the election. The update wil still be in progress
+		if (electionData?.data?.election_id !== electionId) {
+			firebase.fetchElectionWithId(electionId, (res) => {
+				electionDataDispatchFunc({ type: "resetData" });
+				electionDataDispatchFunc({ type: "setData", payload: res });
+			});
+		}
+		setLoading(false);
+	}, [firebase, electionId, electionDataDispatchFunc, electionData?.data]);
 
 	function storeVote(categoryIndex, newVotes) {
 		let newData = votes;

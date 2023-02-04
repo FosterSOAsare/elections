@@ -4,12 +4,14 @@ import Category from "../Category/Category";
 import LoadingGif from "../../../assets/Images/loading.gif";
 import { generateText } from "../../../Utils/Text";
 import { useAppContext } from "../../../Context/AppContext";
+import { useNavigate } from "react-router-dom";
 
 const Step3 = () => {
 	const { electionData, prevStep, electionDataDispatchFunc, setAgreeToRules, setStored } = useElectionContext();
 	const { credentials } = useAppContext();
 	const [waiting, waitingDispatchFunc] = useReducer(waitingFunc, { display: false, text: "" });
 	const { firebase } = useAppContext();
+	const navigate = useNavigate();
 
 	function waitingFunc(waiting, action) {
 		switch (action.type) {
@@ -63,7 +65,10 @@ const Step3 = () => {
 	}
 	function updateElection(e) {
 		e.preventDefault();
-		firebase.updateElectionData(electionData.data, electionData.data.election_id, (res) => {});
+		firebase.updateElectionData(electionData.data, electionData.data.election_id, (res) => {
+			if (res.error) return;
+			navigate(`/election/${electionData.data.election_id}`);
+		});
 	}
 	return (
 		<section className="step3">

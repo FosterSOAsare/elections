@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, applyActionCode } from "firebase/auth";
-import { collection, query, where, getFirestore, getDocs, setDoc, addDoc, deleteDoc, doc, onSnapshot, updateDoc, serverTimestamp } from "firebase/firestore";
+import { collection, query, where, getFirestore, getDocs, setDoc, addDoc, doc, onSnapshot, updateDoc, serverTimestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 class Firebase {
@@ -165,7 +165,7 @@ class Firebase {
 			let basicData = { name: data.name, desc: data.desc };
 			await updateDoc(doc(this.db, "elections", electionId), basicData);
 			// 	// Update candidates and ategories
-			data.categories.forEach(async (category) => {
+			await data.categories.forEach(async (category) => {
 				let categoryData = { name: category.name, limit: category.limit };
 				// If user updates a category
 				if (category.category_id) {
@@ -183,14 +183,14 @@ class Firebase {
 					});
 				} else {
 					// If user adds a new category and new candidates in the category
-					addDoc(collection(this.db, "elections", electionId, "categories"), categoryData).then((res) => {
+					await addDoc(collection(this.db, "elections", electionId, "categories"), categoryData).then((res) => {
 						category.candidates.forEach(async (candidate) => {
 							await addDoc(collection(this.db, "elections", electionId, "categories", res.id, "candidates"), candidate);
 						});
 					});
 				}
 			});
-			// 	callback("success");
+			callback("success");
 		} catch (error) {
 			console.log(error);
 			callback({ error: "true" });
