@@ -42,10 +42,8 @@ const Step3 = () => {
 				// Generate and store voters
 				let limit = +electionData.data.voters;
 				for (let i = 0; i < limit; i++) {
-					let id = generateText(10);
-					let password = generateText(14);
 					// Store voters
-					firebase.storeVoter(password, id, res.id, (res) => {
+					firebase.storeVoter(res.id, (res) => {
 						if (res.error) return;
 						if (i === limit - 1) {
 							electionDataDispatchFunc({ type: "clearData" });

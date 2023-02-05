@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, applyActionCode } from "firebase/auth";
 import { collection, query, where, getFirestore, getDocs, setDoc, addDoc, deleteDoc, doc, onSnapshot, updateDoc, serverTimestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { generateText } from "./Text";
 
 class Firebase {
 	constructor() {
@@ -168,11 +169,39 @@ class Firebase {
 			await updateDoc(doc(this.db, "elections", electionId), baseData);
 
 			// Await for update of the categories
-			let promise = await new Promise((resolve) => this.updateCategories(data.categories, electionId, (res) => resolve(res)));
-			promise = await Promise.resolve(promise);
-			callback(promise);
+			let categoriesPromise = await new Promise((resolve) => this.updateCategories(data.categories, electionId, (res) => resolve(res)));
+			let votersPromise = await new Promise((resolve) => this.updateVoters(data.voters, electionId, (res) => resolve(res)));
+			await Promise.resolve(categoriesPromise);
+			await Promise.resolve(votersPromise);
+			callback("success");
 		} catch (e) {
 			console.log(e);
+			callback({ error: true });
+		}
+	}
+	async updateVoters(votersCount, electionId, callback) {
+		try {
+			// Fetch voters
+			let voters = await getDocs(collection(this.db, "elections", electionId, "voters"));
+			voters = voters.docs.map((e) => {
+				return { ...e.data(), voter_id: e.id };
+			});
+			let votersPromise = [];
+			if (votersCount > voters.length) {
+				// add some voters if the voters count is greater the one already stored
+				for (let i = votersCount; i > voters.length; i--) {
+					votersPromise.push(new Promise((resolve) => this.storeVoter(electionId, (res) => resolve(res))));
+				}
+			} else if (votersCount < voters.length) {
+				// delete some voters
+				for (let i = votersCount; i < voters.length; i++) {
+					votersPromise.push(new Promise(async (resolve) => resolve(await deleteDoc(doc(this.db, "elections", electionId, "voters", voters[i].voter_id)))));
+				}
+			}
+			await Promise.all(votersPromise);
+			callback("success");
+		} catch (error) {
+			console.log(error);
 			callback({ error: true });
 		}
 	}
@@ -288,7 +317,9 @@ class Firebase {
 		}
 	}
 
-	async storeVoter(password, id, election_id, callback) {
+	async storeVoter(election_id, callback) {
+		let id = generateText(10);
+		let password = generateText(14);
 		try {
 			await addDoc(collection(this.db, "elections", election_id, "voters"), { password, id });
 			callback("success");
