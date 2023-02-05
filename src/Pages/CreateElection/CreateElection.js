@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Rules from "./Steps/Rules";
 import Step1 from "./Steps/Step1";
 import Step2 from "./Steps/Step2";
@@ -8,38 +8,38 @@ import { useParams } from "react-router-dom";
 import { useAppContext } from "../../Context/AppContext";
 import NotFound from "../../Components/NotFound/NotFound";
 import Loading from "../../Components/Loading/Loading";
+import { useOutletContext } from "react-router-dom";
 
 const CreateElection = () => {
 	const { electionData, electionDataDispatchFunc, agreeToRules, setAgreeToRules } = useElectionContext();
 	const { electionId } = useParams();
 	const { firebase, notFound, setNotFound } = useAppContext();
-	const [loading, setLoading] = useState(true);
+	const { pageLoading, setPageLoading } = useOutletContext();
 
 	useEffect(() => {
-		// Clear ElectionData when user wants to create a new election
-		if (!electionId && electionData.data.election_id) {
+		if (!electionId) {
 			electionDataDispatchFunc({ type: "resetData" });
+			setAgreeToRules({ state: false, next: false });
+			return;
 		}
-	}, [electionId, electionData, electionDataDispatchFunc]);
-
-	useEffect(() => {
 		// Fetch election Data when user needs to edit an election
 		if (electionId) {
 			electionDataDispatchFunc({ type: "resetData" });
 			firebase.fetchElectionWithId(electionId, (res) => {
-				setLoading(false);
+				setPageLoading(false);
 				if (res.error) return;
 				if (res.empty || res.status !== "pending") {
 					setNotFound(true);
 					return;
 				}
+				setAgreeToRules({ state: true, next: true });
 				electionDataDispatchFunc({ type: "setData", payload: res });
 			});
 		}
-	}, [firebase, electionId, electionDataDispatchFunc, setNotFound]);
+	}, [firebase, electionId, electionDataDispatchFunc, setNotFound, setPageLoading, setAgreeToRules]);
 	return (
 		<>
-			{!loading && (
+			{!pageLoading && (
 				<main className="container createElection">
 					{!notFound && (
 						<div className="createElection__container">
@@ -56,7 +56,7 @@ const CreateElection = () => {
 					{notFound && <NotFound />}
 				</main>
 			)}
-			{loading && <Loading />}
+			{pageLoading && <Loading />}
 		</>
 	);
 };

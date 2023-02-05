@@ -5,6 +5,7 @@ import { useElectionContext } from "../../Context/ElectionContext";
 import Loading from "../../Components/Loading/Loading";
 import ElectionComponent from "./ElectionComponent/ElectionComponent";
 import NotFound from "../../Components/NotFound/NotFound";
+import { useOutletContext } from "react-router-dom";
 const Election = () => {
 	const { electionData, electionDataDispatchFunc } = useElectionContext();
 	const [votes, setVotes] = useState([]);
@@ -12,7 +13,7 @@ const Election = () => {
 	let electionOwner = credentials?.user?.username === electionData?.data?.author;
 
 	const navigate = useNavigate();
-	const [loading, setLoading] = useState(true);
+	const { pageLoading, setPageLoading } = useOutletContext();
 
 	// Fetch election
 	let { electionId } = useParams();
@@ -22,13 +23,14 @@ const Election = () => {
 		electionDataDispatchFunc({ type: "resetData" });
 		firebase.fetchElectionWithId(electionId, (res) => {
 			if (res.error) return;
-			setLoading(false);
+
+			setPageLoading(false);
 			if (res.empty) {
 				setNotFound(true);
 			}
 			electionDataDispatchFunc({ type: "setData", payload: res });
 		});
-	}, [firebase, electionId, electionDataDispatchFunc, setNotFound]);
+	}, [firebase, electionId, electionDataDispatchFunc, setNotFound, setPageLoading]);
 
 	function storeVote(categoryIndex, newVotes) {
 		let newData = votes;
@@ -61,7 +63,7 @@ const Election = () => {
 	return (
 		<>
 			<>
-				{!loading && (
+				{!pageLoading && (
 					<>
 						{!notFound && (
 							<main className="container election">
@@ -125,7 +127,7 @@ const Election = () => {
 						{notFound && <NotFound />}
 					</>
 				)}
-				{loading && <Loading />}
+				{pageLoading && <Loading />}
 			</>
 		</>
 	);

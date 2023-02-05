@@ -3,22 +3,23 @@ import { NavLink } from "react-router-dom";
 import Election from "../../Components/Election";
 import { useAppContext } from "../../Context/AppContext";
 import Loading from "../../Components/Loading/Loading";
+import { useOutletContext } from "react-router-dom";
 
 const Dashboard = () => {
 	const [userElections, setUserElections] = useState([]);
 	const { firebase, credentials } = useAppContext();
-	const [loading, setLoading] = useState(true);
+	const { pageLoading, setPageLoading } = useOutletContext();
 
 	useEffect(() => {
 		firebase.fetchUserElections(credentials?.user?.username, (res) => {
 			if (res.error) return;
 			setUserElections(res);
-			setLoading(false);
+			setPageLoading(false);
 		});
-	}, [firebase, credentials?.user?.username]);
+	}, [firebase, credentials?.user?.username, setPageLoading]);
 	return (
 		<>
-			{!loading && (
+			{!pageLoading && (
 				<main className="container dashboard">
 					<div className="elections">
 						<div className="content">
@@ -37,7 +38,7 @@ const Dashboard = () => {
 					</div>
 				</main>
 			)}
-			{loading && <Loading />}
+			{pageLoading && <Loading />}
 		</>
 	);
 };

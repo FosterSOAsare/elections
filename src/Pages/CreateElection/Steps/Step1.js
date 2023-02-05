@@ -1,11 +1,19 @@
 import React, { useRef } from "react";
 import { useElectionContext } from "../../../Context/ElectionContext";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Step1 = () => {
 	const { nextStep, setAgreeToRules, electionData, electionDataDispatchFunc } = useElectionContext();
+	const { electionId } = useParams();
+	const navigate = useNavigate();
 
 	function cancelElection(e) {
 		e.preventDefault();
+		if (electionId) {
+			navigate(`/election/${electionId}`);
+			// Navigate to election
+			return;
+		}
 		setAgreeToRules({ state: false, next: false });
 	}
 
@@ -25,9 +33,11 @@ const Step1 = () => {
 				<textarea type="text" id="desc" name="desc" aria-placeholder="Enter election description" value={electionData?.data.desc || ""} onChange={storeChanges}></textarea>
 
 				<div className="actions">
-					<button className="button__secondary" onClick={cancelElection}>
-						Cancel
-					</button>
+					{
+						<button className="button__secondary" onClick={cancelElection}>
+							Cancel
+						</button>
+					}
 					<button
 						className="button__primary"
 						onClick={(e) => {

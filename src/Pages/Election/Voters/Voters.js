@@ -3,16 +3,17 @@ import { useParams } from "react-router-dom";
 import { useAppContext } from "../../../Context/AppContext";
 import Loading from "../../../Components/Loading/Loading";
 import NotFound from "../../../Components/NotFound/NotFound";
+import { useOutletContext } from "react-router-dom";
 
 const Voters = () => {
-	const [loading, setLoading] = useState(true);
 	const [voters, setVoters] = useState([]);
 	const { electionId } = useParams();
 	const { firebase, notFound, setNotFound } = useAppContext();
+	const { pageLoading, setPageLoading } = useOutletContext();
 
 	useEffect(() => {
 		firebase.fetchVoters(electionId, (res) => {
-			setLoading(false);
+			setPageLoading(false);
 			if (res.error) return;
 			if (res.empty) {
 				setNotFound(true);
@@ -20,11 +21,11 @@ const Voters = () => {
 			}
 			setVoters(res);
 		});
-	}, [firebase, electionId, setNotFound]);
+	}, [firebase, electionId, setNotFound, setPageLoading]);
 	// Fetch voters
 	return (
 		<>
-			{!loading && (
+			{!pageLoading && (
 				<>
 					{!notFound && (
 						<main className="container voters">
@@ -54,7 +55,7 @@ const Voters = () => {
 					{notFound && <NotFound />}
 				</>
 			)}
-			{loading && <Loading />}
+			{pageLoading && <Loading />}
 		</>
 	);
 };

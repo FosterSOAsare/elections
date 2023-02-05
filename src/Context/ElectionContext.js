@@ -5,7 +5,7 @@ const ElectionContext = createContext();
 const ElectionProvider = ({ children }) => {
 	let startUp = { step: 1, data: { categories: [] } };
 	const [electionData, electionDataDispatchFunc] = useReducer(electionDataFunc, { ...(JSON.parse(localStorage.getItem("electionData")) || { ...startUp }) });
-	const [agreeToRules, setAgreeToRules] = useState({ state: true, next: true });
+	const [agreeToRules, setAgreeToRules] = useState({ state: false, next: false });
 	const [editDataIndex, setEditDataIndex] = useState({ candidateIndex: null, categoryIndex: null });
 	const [showCategoryForm, setShowCategoryForm] = useState(false);
 	const [showCandidateForm, setShowCandidateForm] = useState({ display: false, categoryIndex: null });
