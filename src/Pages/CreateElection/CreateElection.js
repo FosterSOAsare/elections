@@ -30,7 +30,7 @@ const CreateElection = () => {
 			firebase.fetchElectionWithId(electionId, (res) => {
 				setLoading(false);
 				if (res.error) return;
-				if (res.empty) {
+				if (res.empty || res.status !== "pending") {
 					setNotFound(true);
 					return;
 				}

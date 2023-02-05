@@ -102,8 +102,8 @@ const Election = () => {
 											<button className="button__primary" onClick={() => updateStatus("completed")}>
 												Mark Completed
 											</button>
-											<button className="button__secondary" onClick={() => navigate(`/edit/${electionId}`)}>
-												Edit Election
+											<button className="button__secondary" onClick={() => navigate(`./voters`)}>
+												View Voters
 											</button>
 										</>
 									)}
