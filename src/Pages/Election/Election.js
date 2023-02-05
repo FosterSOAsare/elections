@@ -39,7 +39,15 @@ const Election = () => {
 	// Check found
 	useEffect(() => {
 		if (electionData.data.status === "pending") {
-			setNotFound(credentials?.user && credentials?.user?.username !== electionData?.data?.author);
+			let notFound = false;
+			if (!credentials?.user) {
+				notFound = true;
+			} else {
+				if (credentials?.user?.username !== electionData?.data?.author) {
+					notFound = true;
+				}
+			}
+			setNotFound(notFound);
 		}
 	}, [credentials, electionData.data, setNotFound]);
 
@@ -81,7 +89,7 @@ const Election = () => {
 								<div className="actions">
 									{electionData.data.status === "pending" && (
 										<>
-											<button className="button__primary" onClick={() => updateStatus("pending")}>
+											<button className="button__primary" onClick={() => updateStatus("started")}>
 												Start Election
 											</button>
 											<button className="button__secondary" onClick={() => navigate(`/edit/${electionId}`)}>
