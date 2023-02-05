@@ -2,7 +2,6 @@ import React, { useReducer } from "react";
 import { useElectionContext } from "../../../Context/ElectionContext";
 import Category from "../Category/Category";
 import LoadingGif from "../../../assets/Images/loading.gif";
-import { generateText } from "../../../Utils/Text";
 import { useAppContext } from "../../../Context/AppContext";
 import { useNavigate } from "react-router-dom";
 
@@ -62,10 +61,16 @@ const Step3 = () => {
 	}
 	function updateElection(e) {
 		e.preventDefault();
-		firebase.updateElectionData(electionData.data, electionData.data.election_id, (res) => {
-			if (res?.error) return;
-			navigate(`/election/${electionData.data.election_id}`);
-		});
+		waitingDispatchFunc({ type: "setDisplay", payload: true });
+		waitingDispatchFunc({ type: "setText", payload: "Preparing to update election data" });
+		setTimeout(() => {
+			waitingDispatchFunc({ type: "setText", payload: "Update election data , please wait ..." });
+			firebase.updateElectionData(electionData.data, electionData.data.election_id, (res) => {
+				if (res?.error) return;
+				waitingDispatchFunc({ type: "reset" });
+				navigate(`/election/${electionData.data.election_id}`);
+			});
+		}, 2000);
 	}
 	return (
 		<section className="step3">

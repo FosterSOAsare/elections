@@ -321,7 +321,7 @@ class Firebase {
 		let id = generateText(10);
 		let password = generateText(14);
 		try {
-			await addDoc(collection(this.db, "elections", election_id, "voters"), { password, id });
+			await addDoc(collection(this.db, "elections", election_id, "voters"), { password, id, voted: false });
 			callback("success");
 		} catch (e) {
 			callback({ error: true });
