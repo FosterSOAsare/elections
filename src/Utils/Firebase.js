@@ -342,6 +342,10 @@ class Firebase {
 				});
 				let voters = new Promise((resolve) => {
 					this.fetchVoters(election_id, (res) => {
+						if (res.empty) {
+							resolve([]);
+							return;
+						}
 						resolve(res);
 					});
 				});
@@ -381,6 +385,10 @@ class Firebase {
 	async fetchVoters(election_id, callback) {
 		try {
 			onSnapshot(collection(this.db, "elections", election_id, "voters"), (voters) => {
+				if (voters.empty) {
+					callback({ empty: true });
+					return;
+				}
 				voters = voters.docs.map((voter) => {
 					return { ...voter.data(), voter_id: voter.id };
 				});

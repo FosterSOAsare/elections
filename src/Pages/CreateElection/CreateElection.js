@@ -13,7 +13,7 @@ const CreateElection = () => {
 	const { electionData, electionDataDispatchFunc, agreeToRules, setAgreeToRules } = useElectionContext();
 	const { electionId } = useParams();
 	const { firebase, notFound, setNotFound } = useAppContext();
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		// Clear ElectionData when user wants to create a new election
@@ -25,7 +25,6 @@ const CreateElection = () => {
 	useEffect(() => {
 		// Fetch election Data when user needs to edit an election
 		if (electionId) {
-			setLoading(true);
 			electionDataDispatchFunc({ type: "resetData" });
 			firebase.fetchElectionWithId(electionId, (res) => {
 				setLoading(false);

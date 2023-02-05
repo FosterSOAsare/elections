@@ -9,6 +9,7 @@ import Dashboard from "./Pages/Dashboard/Dashboard";
 import Header from "./Components/Header/Header";
 import Election from "./Pages/Election/Election";
 import CreateElection from "./Pages/CreateElection/CreateElection";
+import Voters from "./Pages/Election/Voters/Voters";
 
 function LogInRequired({ children }) {
 	const { credentials } = useAppContext();
@@ -69,14 +70,20 @@ function App() {
 								<CreateElection />
 							</LogInRequired>
 						}></Route>
-					<Route
-						path="edit/:electionId"
-						element={
-							<LogInRequired>
-								<CreateElection />
-							</LogInRequired>
-						}></Route>
-					<Route path="election/:electionId" element={<Election />}></Route>
+					<Route path="edit/:electionId">
+						<Route
+							index
+							element={
+								<LogInRequired>
+									<CreateElection />
+								</LogInRequired>
+							}></Route>
+					</Route>
+
+					<Route path="election/:electionId">
+						<Route index element={<Election />}></Route>
+						<Route path="voters" element={<Voters />}></Route>
+					</Route>
 				</Route>
 			</Routes>
 		</div>
