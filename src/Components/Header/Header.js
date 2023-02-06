@@ -30,19 +30,21 @@ const Header = () => {
 						<>
 							<section className="container header">
 								<h3>Elections</h3>
-								<nav>
-									<ul>
-										<li>
-											<NavLink to="/dashboard"> My Elections</NavLink>
-										</li>
-										<li>
-											<NavLink to="/new">Create New</NavLink>
-										</li>
-										<li className="logout" onClick={() => credentialsDispatchFunc({ type: "logOut" })}>
-											Logout
-										</li>
-									</ul>
-								</nav>
+								{credentials?.user?.username && (
+									<nav>
+										<ul>
+											<li>
+												<NavLink to="/dashboard"> My Elections</NavLink>
+											</li>
+											<li>
+												<NavLink to="/new">Create New</NavLink>
+											</li>
+											<li className="logout" onClick={() => credentialsDispatchFunc({ type: "logOut" })}>
+												Logout
+											</li>
+										</ul>
+									</nav>
+								)}
 							</section>
 						</>
 					)}
