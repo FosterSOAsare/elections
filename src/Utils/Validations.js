@@ -24,6 +24,14 @@ export class Validations {
 		return /^[a-zA-Z0-9._-]{3,15}$/.test(username);
 	}
 	/*
+	Validate the voters
+	@param {number} voters count - The number of voters 
+	@returns {boolean} - true if voters count  is valid, false otherwise
+	*/
+	validateNumber(number) {
+		return /^[0-9]+$/.test(number);
+	}
+	/*
 	Validate the length of a string of text
 	@param {string} text - The text to be validated by its length
 	@param {number} length - The length to be used for the validation
@@ -39,5 +47,14 @@ export class Validations {
 	*/
 	validateLink(link) {
 		return /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/.test(link);
+	}
+	/*
+	Validate the election name
+	@param {string} username - The username to be validated
+	@returns {boolean} - true if username is valid, false otherwise
+	*/
+
+	validateElectionName(name) {
+		return /^[a-zA-Z0-9. ,'-_!]+$/.test(name);
 	}
 }
