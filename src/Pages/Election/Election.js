@@ -18,8 +18,6 @@ const Election = () => {
 	// Fetch election
 	let { electionId } = useParams();
 	useEffect(() => {
-		// This added is for when a user updates the election. The update wil still be in progress
-
 		electionDataDispatchFunc({ type: "resetData" });
 		firebase.fetchElectionWithId(electionId, (res) => {
 			if (res.error) return;
@@ -29,8 +27,27 @@ const Election = () => {
 				setNotFound(true);
 			}
 			electionDataDispatchFunc({ type: "setData", payload: res });
+			// Check if user has logged in or not , also check if user is the election owner. When the election is marked as started
+			if (res.status === "started") {
+				let voter_id = localStorage.getItem("election:voter");
+				// If not logged in redirect user to log in
+				if (((credentials?.user?.username && res.author !== credentials?.user?.username) || !credentials.userId) && !voter_id) {
+					// USer is not logged in
+					navigate("./login");
+				} else if (voter_id) {
+					// Check legitimacy. Redirect if the voter_id is invalid
+					firebase.fetchVoterWithId(electionId, voter_id, (res) => {
+						if (res.error) return;
+						if (res.empty) {
+							// Delete local storage
+							localStorage.removeItem("election:voter");
+							navigate("./login");
+						}
+					});
+				}
+			}
 		});
-	}, [firebase, electionId, electionDataDispatchFunc, setNotFound, setPageLoading]);
+	}, [firebase, electionId, electionDataDispatchFunc, setNotFound, setPageLoading, credentials, navigate]);
 
 	function storeVote(categoryIndex, newVotes) {
 		let newData = votes;
@@ -38,7 +55,7 @@ const Election = () => {
 		setVotes((prev) => newData);
 	}
 
-	// Check found
+	// Check page found
 	useEffect(() => {
 		if (electionData.data.status === "pending") {
 			let notFound = false;
@@ -52,6 +69,9 @@ const Election = () => {
 			setNotFound(notFound);
 		}
 	}, [credentials, electionData.data, setNotFound]);
+
+	// The account that created the election can not vote .
+	// They can only do so if they log out or use a different machine
 
 	function updateStatus(status) {
 		firebase.updateElectionStatus(electionId, status, (res) => {
@@ -84,7 +104,17 @@ const Election = () => {
 								<section className="components">
 									{electionData.data.categories &&
 										electionData.data.categories.map((e, index) => {
-											return <ElectionComponent key={index} {...e} election_id={electionId} categoryIndex={index} votes={votes} storeVote={storeVote} />;
+											return (
+												<ElectionComponent
+													key={index}
+													{...e}
+													election_id={electionId}
+													categoryIndex={index}
+													votes={votes}
+													storeVote={storeVote}
+													electionOwner={electionOwner}
+												/>
+											);
 										})}
 								</section>
 
@@ -101,12 +131,22 @@ const Election = () => {
 									)}
 									{electionData.data.status === "started" && (
 										<>
-											<button className="button__primary" onClick={() => updateStatus("completed")}>
-												Mark Completed
-											</button>
-											<button className="button__secondary" onClick={() => navigate(`./voters`)}>
-												View Voters
-											</button>
+											{electionOwner && (
+												<>
+													<button className="button__primary" onClick={() => updateStatus("completed")}>
+														Mark Completed
+													</button>
+
+													<button className="button__secondary" onClick={() => navigate(`./voters`)}>
+														View Voters
+													</button>
+												</>
+											)}
+											{!electionOwner && (
+												<button className="button__primary" onClick={() => updateStatus("completed")}>
+													Confirm Vote
+												</button>
+											)}
 										</>
 									)}
 									{electionData.data.status === "completed" && (

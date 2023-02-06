@@ -38,7 +38,7 @@ export class Validations {
 	@returns {boolean} - true if text's length is less than or equal to the length specified , false otherwise
 	*/
 	checkLength(text, length) {
-		return text.length <= length;
+		return text.length < length;
 	}
 	/*
 	Validate the link
