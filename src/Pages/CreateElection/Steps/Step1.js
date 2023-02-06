@@ -30,7 +30,7 @@ const Step1 = () => {
 			return false;
 		}
 
-		if (!validations.validateElectionName(name)) {
+		if (!validations.validateName(name)) {
 			errorDispatchFunc({ type: "displayError", payload: "Please enter a valid name" });
 			return false;
 		}

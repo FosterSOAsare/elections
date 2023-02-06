@@ -54,7 +54,7 @@ export class Validations {
 	@returns {boolean} - true if username is valid, false otherwise
 	*/
 
-	validateElectionName(name) {
+	validateName(name) {
 		return /^[a-zA-Z0-9. ,'-_!]+$/.test(name);
 	}
 }
