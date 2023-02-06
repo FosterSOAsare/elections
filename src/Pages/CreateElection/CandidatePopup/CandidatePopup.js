@@ -2,10 +2,13 @@ import React, { useRef, useState } from "react";
 import { useElectionContext } from "../../../Context/ElectionContext";
 import { useAppContext } from "../../../Context/AppContext";
 import { sanitizeText } from "../../../Utils/Text";
+import { useAuthContext } from "../../../Context/AuthContext";
+import Error from "../../../Components/form/Error";
 
 const CandidatePopup = () => {
 	const { setShowCandidateForm, storeCandidate, updateCandidate, setEditDataIndex } = useElectionContext();
 	const { editDataIndex, electionData } = useElectionContext();
+	const { errorDispatchFunc, error, validations, clearError } = useAuthContext();
 	const { firebase } = useAppContext();
 	const [waiting, setWaiting] = useState(false);
 
@@ -52,6 +55,23 @@ const CandidatePopup = () => {
 		});
 	}
 	function prepareCandidateStorage() {
+		// Form validation
+		let formData = new FormData(formRef.current);
+		let name = formData.get("name");
+		let image = formData.get("image");
+
+		if (!name) {
+			errorDispatchFunc({ type: "displayError", payload: "Please enter candidate's name" });
+			return;
+		}
+		if (!image.name) {
+			errorDispatchFunc({ type: "displayError", payload: "Please select candidate's image" });
+			return;
+		}
+		if (!validations.validateName(name)) {
+			errorDispatchFunc({ type: "displayError", payload: "Please enter a valid candidate name" });
+			return;
+		}
 		if (editDataIndex.candidateIndex !== null) {
 			updateCandidate(candidateData, editDataIndex.categoryIndex, editDataIndex.candidateIndex);
 		} else {
@@ -62,7 +82,7 @@ const CandidatePopup = () => {
 		<aside className="categoryPopup candidatePopup container">
 			<form action="" onSubmit={(e) => e.preventDefault()} ref={formRef}>
 				<label htmlFor="name"> Enter candidate's name:</label>
-				<input type="text" name="name" id="name" value={candidateData.name} onChange={setCandidateName} />
+				<input type="text" name="name" id="name" value={candidateData.name} onChange={setCandidateName} onFocus={clearError} />
 
 				<label htmlFor="image" className="candidate_img">
 					{candidateData.imageURL === "" ? <p>Add Image </p> : <img alt="Candidate" src={candidateData?.imageURL} />}
@@ -77,8 +97,10 @@ const CandidatePopup = () => {
 						getImageURL(e);
 						storeImage(e);
 					}}
+					onClick={clearError}
 					ref={inputRef}
 				/>
+				{error.display === "block" && <Error text={error.text} />}
 				<div className="actions">
 					<button className={`button__primary${waiting ? " disabled" : ""}`} onClick={prepareCandidateStorage} disabled={waiting}>
 						Continue
