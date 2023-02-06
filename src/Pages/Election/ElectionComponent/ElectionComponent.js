@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useElectionContext } from "../../../Context/ElectionContext";
 
-const ElectionComponent = ({ name, categoryIndex, candidates, limit, votes, storeVote }) => {
+const ElectionComponent = ({ name, categoryIndex, candidates, limit, votes, storeVote, electionOwner }) => {
 	const [actives, setActives] = useState(votes[categoryIndex] || []);
 	const { electionData } = useElectionContext();
 
 	function selectCandidate(candidateIndex) {
-		if (electionData.data.status === "started") {
+		// Election owner can not
+		if (electionData.data.status === "started" && !electionOwner) {
 			limit = parseInt(limit);
 			let selected = actives;
 			if (actives.length === limit) {

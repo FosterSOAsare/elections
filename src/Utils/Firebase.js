@@ -328,6 +328,36 @@ class Firebase {
 		}
 	}
 
+	async validateVoter(electionId, id, password, callback) {
+		try {
+			let q = query(collection(this.db, "elections", electionId, "voters"), where("id", "==", id), where("password", "==", password));
+			onSnapshot(q, (res) => {
+				if (res.empty) {
+					callback({ empty: true });
+					return;
+				}
+				callback({ voter_id: res.docs[0].id });
+			});
+		} catch (e) {
+			callback({ error: true });
+		}
+	}
+
+	async fetchVoterWithId(electionId, voter_id, callback) {
+		try {
+			onSnapshot(doc(this.db, "elections", electionId, "voters", voter_id), (res) => {
+				if (!res.exists()) {
+					callback({ empty: true });
+					return;
+				}
+				callback(res.data());
+			});
+		} catch (error) {
+			console.log(error);
+			callback({ error: true });
+		}
+	}
+
 	async fetchElectionWithId(election_id, callback) {
 		try {
 			onSnapshot(doc(this.db, "elections", election_id), async (res) => {
@@ -357,6 +387,20 @@ class Firebase {
 				callback(electionData);
 			});
 		} catch (e) {
+			callback({ error: true });
+		}
+	}
+
+	async fetchElectionBasicData(election_id, callback) {
+		try {
+			onSnapshot(doc(this.db, "elections", election_id), async (res) => {
+				if (!res.exists()) {
+					callback({ empty: true });
+					return;
+				}
+				callback({ ...res.data(), election_id: res.id });
+			});
+		} catch (error) {
 			callback({ error: true });
 		}
 	}

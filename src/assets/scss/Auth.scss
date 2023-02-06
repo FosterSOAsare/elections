@@ -7,6 +7,14 @@
 		margin-bottom: 20px;
 		text-align: center;
 	}
+	p.desc {
+		text-align: center;
+		margin: -15px 0 25px 0;
+		span {
+			opacity: 1;
+			font-weight: bold;
+		}
+	}
 	button {
 		width: 100%;
 	}
