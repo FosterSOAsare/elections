@@ -8,7 +8,7 @@ import NotFound from "../../../Components/NotFound/NotFound";
 import Loading from "../../../Components/Loading/Loading";
 const VotersLogin = () => {
 	const { error, clearError, errorDispatchFunc, waiting, setWaiting } = useAuthContext();
-	const { firebase } = useAppContext();
+	const { firebase, credentials } = useAppContext();
 	const { electionId } = useParams();
 	const { notFound, setNotFound } = useAppContext();
 	const { pageLoading, setPageLoading } = useOutletContext();
@@ -23,8 +23,12 @@ const VotersLogin = () => {
 				setNotFound(true);
 				return;
 			}
+			// Redirect if creator of the election
+			if (credentials?.user?.username === res?.author) {
+				navigate("../");
+			}
 		});
-	}, [firebase, electionId, setNotFound, setPageLoading]);
+	}, [firebase, electionId, setNotFound, setPageLoading, credentials?.user?.username, navigate]);
 
 	// Check if user has already logged in and has not voted , redirect
 	useEffect(() => {
