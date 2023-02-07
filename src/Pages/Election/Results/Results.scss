@@ -1,0 +1,54 @@
+.results {
+	min-height: 90vh;
+
+	h3 {
+		text-align: center;
+		color: $whiteText2;
+	}
+	.result___category {
+		min-height: 200px;
+		margin-bottom: 20px;
+		caption {
+			font-weight: bold;
+			text-align: left;
+			margin-bottom: 5px;
+			color: $whiteText2;
+		}
+		table {
+			width: 100%;
+			height: auto;
+			border-collapse: collapse;
+			margin-top: 30px;
+		}
+		table,
+		tr,
+		td,
+		th {
+			border: 1px solid $whiteText1;
+		}
+		th {
+			color: $whiteText1;
+		}
+		tr {
+			text-align: center;
+			height: 40px;
+		}
+		.won {
+			background-color: $won;
+		}
+
+		td {
+			width: 20%;
+		}
+		td:nth-child(2) {
+			width: 40%;
+		}
+	}
+}
+
+body:has(main.results) {
+	background-color: $whiteBg2;
+	.header {
+		background-color: $whiteBg2;
+	}
+}
