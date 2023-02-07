@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, applyActionCode } from "firebase/auth";
-import { collection, query, where, getFirestore, getDocs, setDoc, addDoc, deleteDoc, doc, onSnapshot, updateDoc, serverTimestamp } from "firebase/firestore";
+import { collection, query, where, getFirestore, getDocs, setDoc, addDoc, deleteDoc, doc, onSnapshot, updateDoc, serverTimestamp, runTransaction } from "firebase/firestore";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { generateText } from "./Text";
 
@@ -151,7 +151,7 @@ class Firebase {
 				let categoryData = { name: category.name, limit: category.limit };
 				addDoc(collection(this.db, "elections", response.id, "categories"), categoryData).then((res) => {
 					category.candidates.forEach(async (candidate) => {
-						await addDoc(collection(this.db, "elections", response.id, "categories", res.id, "candidates"), candidate);
+						await addDoc(collection(this.db, "elections", response.id, "categories", res.id, "candidates"), { ...candidate, votes: 0 });
 					});
 				});
 			});
@@ -175,7 +175,6 @@ class Firebase {
 			await Promise.resolve(votersPromise);
 			callback("success");
 		} catch (e) {
-			console.log(e);
 			callback({ error: true });
 		}
 	}
@@ -201,7 +200,6 @@ class Firebase {
 			await Promise.all(votersPromise);
 			callback("success");
 		} catch (error) {
-			console.log(error);
 			callback({ error: true });
 		}
 	}
@@ -266,7 +264,6 @@ class Firebase {
 			await Promise.all(deletionPromises);
 			callback("success");
 		} catch (e) {
-			console.log(e);
 			callback({ error: true });
 		}
 	}
@@ -353,7 +350,6 @@ class Firebase {
 				callback(res.data());
 			});
 		} catch (error) {
-			console.log(error);
 			callback({ error: true });
 		}
 	}
@@ -463,6 +459,39 @@ class Firebase {
 			callback("success");
 		} catch (e) {
 			callback({ error: true });
+		}
+	}
+
+	async insertVote(data, electionId, voter_id, callback) {
+		try {
+			await runTransaction(this.db, async (transaction) => {
+				let voterDoc = await transaction.get(doc(this.db, "elections", electionId, "voters", voter_id));
+				if (!voterDoc.exists() || voterDoc.data().voted === true) {
+					return;
+				}
+				updateDoc(doc(this.db, "elections", electionId, "voters", voter_id), { voted: true });
+
+				// Store votes
+				let updatesPromise = new Promise(async (resolve) => {
+					let promisesArray = [];
+					data.forEach((category) => {
+						category.candidates.forEach(async (candidate) => {
+							// Candidate doc
+							let promise = new Promise(async (resolve) => {
+								let candidateDoc = await transaction.get(doc(this.db, "elections", electionId, "categories", category.category_id, "candidates", candidate));
+								resolve(await updateDoc(doc(this.db, "elections", electionId, "categories", category.category_id, "candidates", candidate), { votes: candidateDoc.data().votes + 1 }));
+							});
+							promisesArray.push(promise);
+						});
+					});
+					resolve(await Promise.all(promisesArray));
+				});
+
+				await Promise.resolve(updatesPromise);
+				callback("success");
+			});
+		} catch (error) {
+			console.log(error);
 		}
 	}
 }

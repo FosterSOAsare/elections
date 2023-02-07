@@ -49,10 +49,14 @@ const Election = () => {
 		});
 	}, [firebase, electionId, electionDataDispatchFunc, setNotFound, setPageLoading, credentials, navigate]);
 
-	function storeVote(categoryIndex, newVotes) {
-		let newData = votes;
-		newData[categoryIndex] = newVotes;
-		setVotes((prev) => newData);
+	// For setting category votes
+	function storeVote(category_id, candidates) {
+		let field = votes.find((e) => e.category_id === category_id);
+		if (!field) {
+			setVotes((prev) => [...prev, { category_id, candidates }]);
+		} else {
+			setVotes((prev) => prev.map((e) => (e.category_id === category_id ? { ...e, candidates } : e)));
+		}
 	}
 
 	// Check page found
@@ -77,6 +81,14 @@ const Election = () => {
 		firebase.updateElectionStatus(electionId, status, (res) => {
 			if (res.error) return;
 			navigate("/");
+		});
+	}
+
+	function storeUserVotes() {
+		firebase.insertVote(votes, electionId, localStorage.getItem("election:voter"), (res) => {
+			if (res.error) return;
+			// Saved
+			console.log("saved");
 		});
 	}
 
@@ -143,7 +155,7 @@ const Election = () => {
 												</>
 											)}
 											{!electionOwner && (
-												<button className="button__primary" onClick={() => updateStatus("completed")}>
+												<button className="button__primary" onClick={storeUserVotes}>
 													Confirm Vote
 												</button>
 											)}

@@ -1,23 +1,24 @@
 import React, { useState } from "react";
 import { useElectionContext } from "../../../Context/ElectionContext";
 
-const ElectionComponent = ({ name, categoryIndex, candidates, limit, votes, storeVote, electionOwner }) => {
-	const [actives, setActives] = useState(votes[categoryIndex] || []);
+const ElectionComponent = ({ name, categoryIndex, candidates, limit, votes, storeVote, electionOwner, category_id }) => {
+	const [actives, setActives] = useState(votes.find((e) => e.category_id === category_id)?.candidates || []);
 	const { electionData } = useElectionContext();
 
-	function selectCandidate(candidateIndex) {
-		// Election owner can not
+	function selectCandidate(candidateId) {
+		// // Election owner can not
 		if (electionData.data.status === "started" && !electionOwner) {
 			limit = parseInt(limit);
 			let selected = actives;
+
 			if (actives.length === limit) {
 				selected.shift();
-				selected = [...selected, candidateIndex];
+				selected = [...selected, candidateId];
 			} else {
-				selected = [...actives, candidateIndex];
+				selected = [...actives, candidateId];
 			}
 
-			storeVote(categoryIndex, selected);
+			storeVote(category_id, selected);
 			setActives(selected);
 		}
 	}
@@ -30,14 +31,14 @@ const ElectionComponent = ({ name, categoryIndex, candidates, limit, votes, stor
 				<div className="candidates">
 					{candidates.map((e, index) => {
 						return (
-							<div key={index} className="candidate" onClick={() => selectCandidate(index)} index={index}>
+							<div key={index} className="candidate" onClick={() => selectCandidate(e.candidate_id)} index={index}>
 								<>
 									<img src={e.imageURL} alt="" />
 									<div className="text__content">
 										<p>{e.name}</p>
 									</div>
 								</>
-								{votes && actives.includes(index) && (
+								{votes && actives.includes(e.candidate_id) && (
 									<div className="cover">
 										<i className="fa-solid fa-check"></i>
 										<p>Selected</p>

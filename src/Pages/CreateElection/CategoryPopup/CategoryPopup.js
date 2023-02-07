@@ -48,7 +48,6 @@ const CategoryPopup = () => {
 			errorDispatchFunc({ type: "displayError", payload: "Please enter a valid limit : (Numbers only) " });
 			return;
 		}
-		console.log(electionData);
 		if (electionData?.data?.categories) {
 			if (editDataIndex?.categoryIndex !== null && electionData?.data?.categories[editDataIndex?.categoryIndex]) {
 				updateCategory(categoryData, editDataIndex?.categoryIndex);
