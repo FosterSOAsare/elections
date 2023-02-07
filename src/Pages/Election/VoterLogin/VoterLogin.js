@@ -26,7 +26,7 @@ const VotersLogin = () => {
 		});
 	}, [firebase, electionId, setNotFound, setPageLoading]);
 
-	// Check if user has already logged in , redirect
+	// Check if user has already logged in and has not voted , redirect
 	useEffect(() => {
 		let voter_id = localStorage.getItem("election:voter");
 		if (voter_id) {
