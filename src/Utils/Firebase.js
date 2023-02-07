@@ -117,7 +117,7 @@ class Firebase {
 				}
 				res = res.docs.map((e) => {
 					let data = e.data();
-					return { desc: data.desc, name: data.name, election_id: e.id };
+					return { desc: data.desc, name: data.name, election_id: e.id , status : data.status };
 				});
 				callback(res);
 			});

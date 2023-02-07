@@ -13,6 +13,11 @@ const Dashboard = () => {
 	useEffect(() => {
 		firebase.fetchUserElections(credentials?.user?.username, (res) => {
 			if (res.error) return;
+			res = res.sort((a, b) => {
+				if (a.status === "completed" && b.status !== "completed") return 1;
+				if (a.status !== "completed" && b.status === "completed") return -1;
+				return 0;
+			});
 			setUserElections(res);
 			setPageLoading(false);
 		});

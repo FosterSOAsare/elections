@@ -22,6 +22,13 @@
 					box-shadow: inset -20px -20px 60px #cfcfd1, inset 20px 20px 60px #ffffff;
 					padding: 20px;
 					position: relative;
+					.heading {
+						@include flex(space-between, center);
+						i {
+							color: green;
+							font-size: 18px;
+						}
+					}
 					i {
 						font-size: 20px;
 					}

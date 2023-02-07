@@ -50,6 +50,11 @@ const Election = () => {
 					});
 				}
 			}
+			if (res.status === "completed") {
+				if (!credentials.userId || (credentials?.user?.username && credentials?.user?.username !== res.author)) {
+					navigate("./results");
+				}
+			}
 		});
 	}, [firebase, electionId, electionDataDispatchFunc, setNotFound, setPageLoading, credentials, navigate]);
 
