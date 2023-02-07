@@ -8,10 +8,19 @@ import { useOutletContext } from "react-router-dom";
 const Voters = () => {
 	const [voters, setVoters] = useState([]);
 	const { electionId } = useParams();
-	const { firebase, notFound, setNotFound } = useAppContext();
+	const { firebase, notFound, setNotFound, credentials } = useAppContext();
 	const { pageLoading, setPageLoading } = useOutletContext();
 
 	useEffect(() => {
+		firebase.fetchElectionBasicData(electionId, (res) => {
+			if (res.error) return;
+
+			if (!credentials.userId || (credentials?.user?.username && res.author !== credentials?.user?.username)) {
+				setPageLoading(false);
+				setNotFound(true);
+				return;
+			}
+		});
 		firebase.fetchVoters(electionId, (res) => {
 			setPageLoading(false);
 			if (res.error) return;
@@ -21,7 +30,7 @@ const Voters = () => {
 			}
 			setVoters(res);
 		});
-	}, [firebase, electionId, setNotFound, setPageLoading]);
+	}, [firebase, electionId, setPageLoading, credentials?.user?.username, setNotFound, credentials?.userId]);
 	// Fetch voters
 	return (
 		<>
