@@ -7,6 +7,9 @@
 	right: 0;
 	z-index: 4;
 	background-color: $whiteBg1;
+	.link {
+		text-decoration: none;
+	}
 	nav {
 		ul {
 			@include flex(space-between, center);

@@ -29,7 +29,9 @@ const Header = () => {
 					{!notFound && (
 						<>
 							<section className="container header">
-								<h3>Elections</h3>
+								<NavLink to="/" className="link">
+									<h3>Elections</h3>
+								</NavLink>
 								{credentials?.user?.username && (
 									<nav>
 										<ul>
