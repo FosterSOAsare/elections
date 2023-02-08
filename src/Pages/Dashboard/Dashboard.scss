@@ -24,9 +24,16 @@
 					position: relative;
 					.heading {
 						@include flex(space-between, center);
-						i {
-							color: green;
-							font-size: 18px;
+						.actions {
+							gap: 7px;
+							i {
+								color: $success;
+								font-size: 14px;
+								margin: 0;
+							}
+							i.fa-trash {
+								color: $error;
+							}
 						}
 					}
 					i {

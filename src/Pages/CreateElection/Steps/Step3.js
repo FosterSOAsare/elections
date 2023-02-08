@@ -66,9 +66,11 @@ const Step3 = () => {
 		setTimeout(() => {
 			waitingDispatchFunc({ type: "setText", payload: "Update election data , please wait ..." });
 			firebase.updateElectionData(electionData.data, electionData.data.election_id, (res) => {
-				if (res?.error) return;
-				waitingDispatchFunc({ type: "reset" });
-				navigate(`/election/${electionData.data.election_id}`);
+				if (res?.error) return;		
+				setTimeout(() => {
+					waitingDispatchFunc({ type: "reset" });
+					navigate(`/election/${electionData.data.election_id}`);
+				} , 1000)
 			});
 		}, 2000);
 	}

@@ -51,14 +51,14 @@ const Register = () => {
 			}
 			// Create a new auth
 			firebase.createNewAuth(email, password, (res) => {
-				let uid = res.user.uid;
 				if (res.error) {
 					if (res.payload) {
 						errorDispatchFunc({ type: "displayError", payload: res.payload });
 					}
 					return;
 				}
-				firebase.sendUserVerificationEmail(res.user, (res) => {
+				let uid = res?.user?.uid;
+				firebase.sendUserVerificationEmail(res?.user, (res) => {
 					if (res.error) return;
 					// Store Data
 					firebase.addNewUser(username, uid, (res) => {

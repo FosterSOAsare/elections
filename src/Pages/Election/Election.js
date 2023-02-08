@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useAppContext } from "../../Context/AppContext";
 import { useElectionContext } from "../../Context/ElectionContext";
 import Loading from "../../Components/Loading/Loading";
@@ -14,6 +14,7 @@ const Election = () => {
 	let electionOwner = credentials?.user?.username === electionData?.data?.author;
 
 	const navigate = useNavigate();
+	const location = useLocation();
 	const { pageLoading, setPageLoading } = useOutletContext();
 
 	// Fetch election
@@ -56,7 +57,7 @@ const Election = () => {
 				}
 			}
 		});
-	}, [firebase, electionId, electionDataDispatchFunc, setNotFound, setPageLoading, credentials, navigate]);
+	}, [firebase, electionId, electionDataDispatchFunc, setNotFound, setPageLoading, credentials, location, navigate]);
 
 	// For setting category votes
 	function storeVote(category_id, candidates) {
@@ -88,6 +89,13 @@ const Election = () => {
 
 	function updateStatus(status) {
 		firebase.updateElectionStatus(electionId, status, (res) => {
+			if (res.error) return;
+			navigate("/");
+		});
+	}
+
+	function deleteElection() {
+		firebase.deleteElectionData(electionId, (res) => {
 			if (res.error) return;
 			navigate("/");
 		});
@@ -186,12 +194,12 @@ const Election = () => {
 													<button className="button__primary" onClick={() => navigate(`./results`)}>
 														View Results
 													</button>
-													{electionOwner && (
-														<button className="button__secondary button__error" onClick={() => navigate(`/edit/${electionId}`)}>
-															Delete Election
-														</button>
-													)}
 												</>
+											)}
+											{electionOwner && electionData.data.status !== "started" && (
+												<button className="button__secondary button__error" onClick={deleteElection}>
+													Delete Election
+												</button>
 											)}
 										</div>
 									</>

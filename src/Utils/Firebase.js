@@ -117,7 +117,7 @@ class Firebase {
 				}
 				res = res.docs.map((e) => {
 					let data = e.data();
-					return { desc: data.desc, name: data.name, election_id: e.id , status : data.status };
+					return { desc: data.desc, name: data.name, election_id: e.id, status: data.status };
 				});
 				callback(res);
 			});
@@ -169,12 +169,16 @@ class Firebase {
 			await updateDoc(doc(this.db, "elections", electionId), baseData);
 
 			// Await for update of the categories
-			let categoriesPromise = await new Promise((resolve) => this.updateCategories(data.categories, electionId, (res) => resolve(res)));
-			let votersPromise = await new Promise((resolve) => this.updateVoters(data.voters, electionId, (res) => resolve(res)));
-			await Promise.resolve(categoriesPromise);
-			await Promise.resolve(votersPromise);
+			let categoriesPromise = new Promise((resolve) => this.updateCategories(data.categories, electionId, (res) => resolve(res)));
+			let votersPromise = new Promise((resolve) => this.updateVoters(data.voters, electionId, (res) => resolve(res)));
+
+			let promise1 = await Promise.resolve(categoriesPromise);
+			let promise2 = await Promise.resolve(votersPromise);
+			console.log(promise1, promise2);
+
 			callback("success");
 		} catch (e) {
+			console.log(e);
 			callback({ error: true });
 		}
 	}
@@ -204,6 +208,15 @@ class Firebase {
 		}
 	}
 
+	async deleteElectionData(electionId, callback) {
+		try {
+			await deleteDoc(doc(this.db, "elections", electionId));
+			callback("success");
+		} catch (error) {
+			callback({ error: true });
+		}
+	}
+
 	async updateCategories(dataCategories, electionId, callback) {
 		try {
 			// Fetch old data which does not include the newly created candidates to be used in deletion of categories based on update
@@ -220,18 +233,22 @@ class Firebase {
 				let promise = "";
 				if (category.category_id) {
 					// Update
-					promise = new Promise(async (resolve) => resolve(await updateDoc(doc(this.db, "elections", electionId, "categories", category.category_id), categoryData)));
+					promise = await new Promise(async (resolve) => resolve(await updateDoc(doc(this.db, "elections", electionId, "categories", category.category_id), categoryData)));
 				} else {
 					// 	Add new category
 					// When adding new category , candidates must also be added
-					promise = new Promise(async (resolve) => {
+					promise = await new Promise(async (resolve) => {
 						let promises = [];
 						let addedCategory = await addDoc(collection(this.db, "elections", electionId, "categories"), categoryData);
 
 						category.candidates.forEach((candidate) => {
-							promises.push(new Promise(async (resolve) => resolve(await addDoc(collection(this.db, "elections", electionId, "categories", addedCategory.id, "candidates"), candidate))));
+							promises.push(
+								new Promise(async (resolve) =>
+									resolve(await addDoc(collection(this.db, "elections", electionId, "categories", addedCategory.id, "candidates"), { ...candidate, votes: 0 }))
+								)
+							);
 						});
-						promises = Promise.all(promises);
+						promises = await Promise.all(promises);
 						// Wait for the creation of all the candidates before resolving the promise.
 						resolve(promises);
 					});
@@ -242,26 +259,25 @@ class Firebase {
 				let category_id = category.category_id || promise?.id;
 
 				// Modify candidates of the particular category
-				let candidates = new Promise((resolve) =>
+				let candidates = await new Promise((resolve) =>
 					this.updateCandidates(category.candidates, electionId, category_id, (res) => {
 						resolve(res);
 					})
 				);
 				updateEditPromises.push(candidates);
 			});
-			await Promise.all(updateEditPromises);
-
+			updateEditPromises = await Promise.all(updateEditPromises);
 			// Delete categories that were deleted using reference from the old data
 			let deletionPromises = [];
-			storedCategories.forEach((storedCategory) => {
+			storedCategories.forEach(async (storedCategory) => {
 				let found = dataCategories.find((e) => {
 					return e.category_id === storedCategory.category_id;
 				});
 				if (!found) {
-					deletionPromises.push(new Promise(async (resolve) => resolve(await deleteDoc(doc(this.db, "elections", electionId, "categories", storedCategory.category_id)))));
+					deletionPromises.push(await new Promise(async (resolve) => resolve(await deleteDoc(doc(this.db, "elections", electionId, "categories", storedCategory.category_id)))));
 				}
 			});
-			await Promise.all(deletionPromises);
+			deletionPromises = await Promise.all(deletionPromises);
 			callback("success");
 		} catch (e) {
 			callback({ error: true });
@@ -284,10 +300,12 @@ class Firebase {
 					let candidate_id = candidate.candidate_id;
 					let data = { name: candidate.name, imageURL: candidate.imageURL };
 					// Update
-					promise = new Promise(async (resolve) => resolve(await updateDoc(doc(this.db, "elections", electionId, "categories", category_id, "candidates", candidate_id), data)));
+					promise = new Promise(async (resolve) =>
+						resolve(await updateDoc(doc(this.db, "elections", electionId, "categories", category_id, "candidates", candidate_id), data, { merge: true }))
+					);
 				} else {
 					// Add
-					promise = new Promise(async (resolve) => resolve(await addDoc(collection(this.db, "elections", electionId, "categories", category_id, "candidates"), candidate)));
+					promise = new Promise(async (resolve) => resolve(await addDoc(collection(this.db, "elections", electionId, "categories", category_id, "candidates"), { ...candidate, votes: 0 })));
 				}
 				// Push update or add promises to the updateEditPromises array to be waited for and resolved
 				updateEditPromises.push(promise);

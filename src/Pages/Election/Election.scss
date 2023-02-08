@@ -9,6 +9,8 @@
 	p.intro {
 		opacity: 0.8;
 		margin-bottom: 20px;
+		word-break: break-all;
+		text-align: left;
 	}
 	.notes {
 		padding: 0 10px;
@@ -46,13 +48,13 @@
 			color: $whiteBg1;
 			margin-bottom: 20px;
 		}
-		button{
-			border : none;
-			background-color : transparent;
-			text-decoration : underline;
-			color:$whiteText2;
-			&:hover{
-				cursor : pointer;
+		button {
+			border: none;
+			background-color: transparent;
+			text-decoration: underline;
+			color: $whiteText2;
+			&:hover {
+				cursor: pointer;
 			}
 		}
 	}

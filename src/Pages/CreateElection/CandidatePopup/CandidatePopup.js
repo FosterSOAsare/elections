@@ -59,12 +59,13 @@ const CandidatePopup = () => {
 		let formData = new FormData(formRef.current);
 		let name = formData.get("name");
 		let image = formData.get("image");
-
+		let imageURL = electionData?.data?.categories[editDataIndex?.categoryIndex]?.candidates[editDataIndex?.candidateIndex].imageURL;
 		if (!name) {
 			errorDispatchFunc({ type: "displayError", payload: "Please enter candidate's name" });
 			return;
 		}
-		if (!image.name) {
+
+		if (!image.name && !imageURL) {
 			errorDispatchFunc({ type: "displayError", payload: "Please select candidate's image" });
 			return;
 		}
