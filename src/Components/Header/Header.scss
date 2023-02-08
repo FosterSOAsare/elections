@@ -31,4 +31,20 @@
 			}
 		}
 	}
+	.menuBtn {
+		display: none;
+	}
+}
+
+@media screen and (max-width: 460px) {
+	.header {
+		nav {
+			display: none;
+		}
+		.menuBtn {
+			@include flex(center, center);
+			width: 30px;
+			height: 30px;
+		}
+	}
 }

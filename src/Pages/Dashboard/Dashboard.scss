@@ -69,3 +69,49 @@
 		}
 	}
 }
+
+@media screen and (max-width: 860px) {
+	.dashboard {
+		.elections {
+			.content {
+				.elections {
+					grid-template-columns: 1fr 1fr;
+					gap: 34px;
+				}
+			}
+		}
+	}
+}
+@media screen and (max-width: 700px) {
+	.dashboard {
+		.elections {
+			.content {
+				.elections {
+					gap: 20px;
+					.election{
+						.heading{
+							.actions{
+								justify-content : flex-end;
+								width : auto;
+								flex-direction : row;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+@media screen and (max-width: 500px) {
+	.dashboard {
+		.elections {
+			.content {
+				.elections {
+					grid-template-columns: 1fr;
+					gap: 24px;
+				}
+			}
+		}
+	}
+}

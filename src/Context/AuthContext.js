@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useMemo, useReducer, useState, useEffect } from "react";
 import { Validations } from "../Utils/Validations";
+import {useLocation} from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -7,9 +8,13 @@ const AuthProvider = ({ children }) => {
 	const [error, errorDispatchFunc] = useReducer(errorFunc, { display: "none", text: "" });
 	const [redirect, redirectDispatchFunc] = useReducer(redirectFunc, { redirect: false, path: "" });
 	const [waiting, setWaiting] = useState(false);
+	const location = useLocation();
 
 	const validations = useMemo(() => new Validations(), []);
 
+	useEffect(() => {
+		errorDispatchFunc({type : 'clearError'})
+	} , [location , errorDispatchFunc])
 	function errorFunc(error, action) {
 		switch (action.type) {
 			case "displayError":

@@ -47,6 +47,7 @@ const Header = () => {
 										</ul>
 									</nav>
 								)}
+								<i className="fa-solid fa-bars menuBtn"></i>
 							</section>
 						</>
 					)}

@@ -71,6 +71,7 @@ const CategoryPopup = () => {
 						onClick={() => {
 							setEditDataIndex({ categoryIndex: null, candidateIndex: null });
 							setShowCategoryForm(false);
+							errorDispatchFunc({type : 'clearError'})
 						}}>
 						Cancel
 					</button>

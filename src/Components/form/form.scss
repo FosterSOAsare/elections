@@ -5,7 +5,8 @@
 		border: 1px solid $whiteText1;
 		border-radius: 5px;
 		padding-right: 5px;
-		width: 600px;
+		max-width: 600px;
+		width : 100%;
 		input {
 			margin: 0;
 			border: none;
@@ -22,4 +23,5 @@
 	font-size: 13px;
 	font-family: "Poppins", sans-serif;
 	width: 100%;
+	
 }

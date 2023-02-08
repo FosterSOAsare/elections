@@ -120,3 +120,38 @@
 		font-weight: bold;
 	}
 }
+
+
+@media screen and (max-width : 800px){
+	.category{
+		.candidates{
+			.content{
+				grid-template-columns : 1fr 1fr;
+				gap: 20px;
+			}
+		}
+	}
+}
+
+@media screen and (max-width : 510px){
+	.category{
+		.category__header{
+			.actions{
+				width: 80px;
+				margin : 0;
+			}
+		}
+		.actions{
+				flex-direction : row;
+			}
+		.candidates{
+			.content{	
+				grid-template-columns : 1fr;
+				.candidate{
+					padding-bottom : 10px;
+				}
+			
+			}
+		}
+	}
+}

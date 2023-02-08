@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useReducer, useEffect } fro
 const ElectionContext = createContext();
 
 const ElectionProvider = ({ children }) => {
-	let startUp = { step: 1, data: { categories: [] } };
+	let startUp = { step: 2, data: { categories: [] } };
 	const [electionData, electionDataDispatchFunc] = useReducer(electionDataFunc, { ...(JSON.parse(localStorage.getItem("electionData")) || { ...startUp }) });
 	const [agreeToRules, setAgreeToRules] = useState({ state: false, next: false });
 	const [editDataIndex, setEditDataIndex] = useState({ candidateIndex: null, categoryIndex: null });
@@ -19,7 +19,7 @@ const ElectionProvider = ({ children }) => {
 			case "setData":
 				return { ...electionData, data: { ...electionData.data, ...action.payload } };
 			case "resetData":
-				return { step: 1, data: { categories: [] } };
+				return { step: 2, data: { categories: [] } };
 			case "clearData":
 				return startUp;
 			case "prevStep":

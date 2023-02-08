@@ -17,7 +17,6 @@ $won: rgb(156, 202, 156);
 	height: auto;
 	margin: 0 auto;
 	max-width: 1024px;
-	// padding-bottom: 50px;
 }
 * {
 	padding: 0;
@@ -186,5 +185,35 @@ img.loading__img {
 .notFound {
 	p {
 		letter-spacing: 0;
+	}
+}
+
+@media screen and (max-width: 860px) {
+	.container {
+		padding: 0 20px;
+	}
+}
+@media screen and (max-width: 600px) {
+	.container {
+		padding: 0 10px;
+	}
+		input , label {
+		width: 100%;
+		margin-inline: auto;
+	}
+	input{
+		height: 45px;
+	}
+}
+
+
+@media screen and (max-width : 460px){
+	.actions {
+		width: 100%;
+		flex-direction: column;
+		button{
+			width : 100%;
+			margin : 0;
+		}
 	}
 }
